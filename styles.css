@@ -1648,8 +1648,13 @@ body.dark-theme .footer {
 }
 
 /* ==========================================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE (TABLET & CELULAR OTIMIZADOS)
    ========================================================================== */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 @media (max-width: 1080px) {
   .departments-grid,
   .products-showcase-grid {
@@ -1658,79 +1663,414 @@ body.dark-theme .footer {
   .benefits-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .palette-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .stores-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 860px) {
-  .hero-grid,
-  .about-grid {
-    grid-template-columns: 1fr;
+  .container {
+    padding: 0 16px;
   }
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
+
+  .header-inner {
+    height: 66px;
+    gap: 8px;
   }
+
+  .brand {
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .brand-icon {
+    width: 34px;
+    height: 36px;
+  }
+
+  .brand-title {
+    font-size: 1.08rem;
+    white-space: nowrap;
+  }
+
+  .brand-subtitle {
+    font-size: 0.62rem;
+    white-space: nowrap;
+  }
+
+  .header-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .wa-nav-icon {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+
+  .wa-nav-icon svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .theme-toggle-btn svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .menu-toggle {
+    display: flex;
+    margin-left: 2px;
+  }
+
+  .menu-toggle span {
+    width: 22px;
+    height: 2.5px;
+  }
+
   .nav {
     position: fixed;
-    top: 82px;
+    top: 66px;
     left: 0;
     right: 0;
-    background: #FFFFFF;
+    background: var(--bg-white);
     flex-direction: column;
-    padding: 24px;
+    padding: 20px;
+    gap: 16px;
     border-bottom: 2px solid var(--green-primary);
     box-shadow: var(--shadow-md);
-    transform: translateY(-130%);
+    transform: translateY(-140%);
     opacity: 0;
     pointer-events: none;
     transition: var(--transition);
   }
+
   .nav.open {
     transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
   }
-  .menu-toggle {
-    display: flex;
+
+  .hero-grid,
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
   }
 }
 
 @media (max-width: 600px) {
-  .topbar-inner {
-    justify-content: center;
+  .section {
+    padding: 48px 0;
+  }
+
+  .section-header {
+    margin-bottom: 28px;
+  }
+
+  .section-tag {
+    font-size: 0.68rem;
+    padding: 4px 11px;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-size: 1.38rem;
+    line-height: 1.22;
+    margin-bottom: 8px;
+  }
+
+  .section-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  /* Hero Mobile Limpo e Centralizado */
+  .hero {
+    padding: 28px 0 40px;
     text-align: center;
   }
-  .topbar-right {
+
+  .hero-tag {
+    font-size: 0.72rem;
+    padding: 5px 11px;
+    margin-bottom: 14px;
+  }
+
+  .hero-title {
+    font-size: 1.62rem;
+    line-height: 1.18;
+    margin-bottom: 12px;
+  }
+
+  .hero-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0 auto 20px;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .hero-ctas .btn-lg {
+    width: 100%;
+    padding: 13px 18px;
+    font-size: 0.92rem;
+  }
+
+  /* 3 Indicadores alinhados em 3 colunas no celular */
+  .hero-highlights {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding-top: 18px;
+  }
+
+  .hero-highlight-divider {
     display: none;
   }
-  .departments-grid,
-  .products-showcase-grid,
-  .benefits-grid,
-  .palette-grid,
+
+  .hero-highlight-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 6px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .hh-number {
+    font-size: 1.25rem;
+  }
+
+  .hh-label {
+    font-size: 0.72rem;
+  }
+
+  .hh-label small {
+    display: block;
+    font-size: 0.65rem;
+  }
+
+  /* Carrossel Mobile mais limpo */
+  .hero-carousel {
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .carousel-cat-badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+  }
+
+  .carousel-counter {
+    font-size: 0.74rem;
+    padding: 3px 9px;
+  }
+
+  .carousel-viewport {
+    aspect-ratio: 4 / 3.6;
+  }
+
+  .carousel-nav {
+    top: 36%;
+    width: 34px;
+    height: 34px;
+    font-size: 1.3rem;
+  }
+
+  .carousel-caption-overlay {
+    padding: 32px 12px 14px;
+    text-align: left;
+  }
+
+  .carousel-caption-overlay h3 {
+    font-size: 0.94rem;
+  }
+
+  .carousel-caption-overlay p {
+    font-size: 0.76rem;
+  }
+
+  .carousel-dots {
+    display: none;
+  }
+
+  /* Vantagens em Grade 2x2 Compacta no Celular */
+  .benefits-bar {
+    padding: 22px 0;
+  }
+
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .benefit-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px 12px;
+  }
+
+  .benefit-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.25rem;
+    border-radius: 10px;
+  }
+
+  .benefit-card h3 {
+    font-size: 0.85rem;
+    line-height: 1.25;
+  }
+
+  .benefit-card p {
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  /* Departamentos mais enxutos no Celular */
+  .departments-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .dept-card {
+    padding: 20px 18px;
+  }
+
+  .dept-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  .dept-card h3 {
+    font-size: 1.08rem;
+    margin-bottom: 6px;
+  }
+
+  .dept-card p {
+    font-size: 0.84rem;
+    margin-bottom: 12px;
+  }
+
+  .dept-list {
+    margin-bottom: 16px;
+  }
+
+  .dept-list li {
+    font-size: 0.82rem;
+    padding: 5px 0;
+  }
+
+  /* Destaques da Loja em Grade 2x2 estilo Vitrine Mobile */
+  .products-showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .showcase-badge {
+    top: 8px;
+    left: 8px;
+    font-size: 0.6rem;
+    padding: 3px 8px;
+  }
+
+  .showcase-body {
+    padding: 12px;
+  }
+
+  .showcase-category {
+    font-size: 0.65rem;
+    margin-bottom: 3px;
+  }
+
+  .showcase-body h3 {
+    font-size: 0.88rem;
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+
+  .showcase-body p {
+    font-size: 0.75rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .btn-wa-reveal {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .btn-wa-reveal svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Sobre Nós e Lojas no Celular */
+  .about-lead {
+    font-size: 0.96rem;
+  }
+
+  .about-text {
+    font-size: 0.86rem;
+  }
+
+  .about-actions {
+    flex-direction: column;
+  }
+
+  .about-actions .btn {
+    width: 100%;
+  }
+
+  .store-card {
+    padding: 20px 16px;
+  }
+
+  .store-card h3 {
+    font-size: 1.12rem;
+  }
+
+  .cta-banner {
+    padding: 40px 0;
+    text-align: center;
+  }
+
+  .cta-banner-inner {
+    justify-content: center;
+  }
+
+  .cta-banner-buttons,
+  .cta-banner-buttons .btn {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .footer {
+    padding: 44px 0 24px;
+  }
+
   .footer-grid {
     grid-template-columns: 1fr;
-  }
-  .hero {
-    padding: 48px 0 64px;
-  }
-  .hero-highlights {
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .collage-card-top {
-    left: 8px;
-    top: 8px;
-  }
-  .collage-card-bottom {
-    right: 8px;
-    bottom: 8px;
-  }
-  .btn-whatsapp-header span {
-    display: none;
+    gap: 24px;
   }
 }
 
