@@ -7,12 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const menuToggle = document.getElementById('menu-toggle');
   const navMenu = document.getElementById('nav-menu');
   const navLinks = document.querySelectorAll('.nav-link');
-  const swatchCards = document.querySelectorAll('.swatch-card');
-  const toast = document.getElementById('copy-toast');
+  const themeToggle = document.getElementById('theme-toggle');
   const yearSpan = document.getElementById('current-year');
 
   if (yearSpan) {
     yearSpan.textContent = new Date().getFullYear();
+  }
+
+  // Alternar Tema Claro / Escuro (com salvamento automático)
+  if (localStorage.getItem('bela_theme') === 'dark') {
+    document.body.classList.add('dark-theme');
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      localStorage.setItem('bela_theme', isDark ? 'dark' : 'light');
+    });
   }
 
   // Sombra no Header ao rolar a página
@@ -139,33 +151,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================================================
-  // COPIAR CÓDIGO HEX DA PALETA DE CORES COM 1 CLIQUE
+  // DESTAQUES DA LOJA: EXIBIR WHATSAPP AO PASSAR O MOUSE OU CLICAR NO CARD
   // ========================================================================
-  let toastTimeout;
-  swatchCards.forEach((card) => {
-    card.addEventListener('click', async () => {
-      const hex = card.getAttribute('data-hex');
-      if (!hex) return;
+  const showcaseCards = document.querySelectorAll('.showcase-card');
+  showcaseCards.forEach((card) => {
+    card.addEventListener('click', (e) => {
+      // Se clicou diretamente no link/ícone do WhatsApp, deixa abrir o link normalmente
+      if (e.target.closest('a')) return;
 
-      try {
-        await navigator.clipboard.writeText(hex);
-      } catch {
-        const tempInput = document.createElement('input');
-        tempInput.value = hex;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-      }
-
-      if (toast) {
-        toast.textContent = `Cor ${hex} copiada para a área de transferência!`;
-        toast.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => {
-          toast.classList.remove('show');
-        }, 2400);
+      const wasActive = card.classList.contains('active-card');
+      showcaseCards.forEach((c) => c.classList.remove('active-card'));
+      if (!wasActive) {
+        card.classList.add('active-card');
       }
     });
+  });
+
+  // Fechar card ativo ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.showcase-card')) {
+      showcaseCards.forEach((c) => c.classList.remove('active-card'));
+    }
   });
 });

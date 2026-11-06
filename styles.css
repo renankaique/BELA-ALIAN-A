@@ -329,17 +329,146 @@ img {
   filter: brightness(1.07);
 }
 
-.btn-whatsapp-header {
-  background: var(--green-primary);
+/* Ícone Redondinho do App WhatsApp (Igual no Celular) */
+.wa-app-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #52E364 0%, #25D366 55%, #128C7E 100%);
   color: #FFFFFF;
-  padding: 10px 18px;
-  font-size: 0.88rem;
-  border-radius: 50px;
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+  transition: var(--transition);
+  flex-shrink: 0;
 }
 
-.btn-whatsapp-header:hover {
-  background: var(--orange-energy);
-  transform: translateY(-1px);
+.wa-nav-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.wa-nav-icon svg {
+  width: 27px;
+  height: 27px;
+}
+
+.wa-nav-icon:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 10px 24px rgba(37, 211, 102, 0.65);
+}
+
+/* Ícone Redondinho do App Instagram (No Mesmo Formato) */
+.ig-app-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #FFFFFF;
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 6px 18px rgba(214, 36, 159, 0.38);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.ig-app-icon:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 10px 24px rgba(214, 36, 159, 0.6);
+}
+
+/* Botão Redondinho de Alternar Tema (Claro / Escuro) */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #2B333C 0%, #161B22 100%);
+  color: #FFD43B;
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.theme-toggle-btn .icon-sun {
+  display: none;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================================================
+   TEMA ESCURO (DARK MODE)
+   ========================================================================== */
+body.dark-theme {
+  --charcoal: #F2F7F4;
+  --text-main: #E6F0EA;
+  --text-muted: #9EB5A5;
+  --bg-light: #0D1B12;
+  --bg-white: #13261B;
+  --border-color: #213D2B;
+  background-color: #09130D;
+  color: var(--text-main);
+}
+
+body.dark-theme .header {
+  background: rgba(9, 19, 13, 0.94);
+  border-bottom-color: #1E3827;
+}
+
+body.dark-theme .brand-subtitle {
+  color: var(--green-neon);
+}
+
+body.dark-theme .theme-toggle-btn {
+  background: linear-gradient(145deg, #FFB800 0%, #FF6B00 100%);
+  color: #FFFFFF;
+  border-color: #1E3827;
+  box-shadow: 0 6px 18px rgba(255, 136, 0, 0.45);
+}
+
+body.dark-theme .theme-toggle-btn .icon-moon {
+  display: none;
+}
+
+body.dark-theme .theme-toggle-btn .icon-sun {
+  display: block;
+}
+
+body.dark-theme .dept-list li {
+  border-bottom-color: #1F3B29;
+}
+
+body.dark-theme .dept-tools {
+  background: rgba(140, 224, 39, 0.14);
+  color: var(--green-neon);
+}
+
+body.dark-theme .stores-section {
+  background: linear-gradient(180deg, #0D1B12 0%, #09130D 100%);
+}
+
+body.dark-theme .badge-go {
+  background: rgba(255, 136, 0, 0.2);
+  color: #FFB84D;
+}
+
+body.dark-theme .nav {
+  background: #0D1B12;
+}
+
+body.dark-theme .footer {
+  background: #050C08;
+  border-top: 1px solid #1E3827;
 }
 
 .menu-toggle {
@@ -885,11 +1014,16 @@ img {
   display: flex;
   flex-direction: column;
   transition: var(--transition);
+  cursor: pointer;
+  outline: none;
 }
 
-.showcase-card:hover {
+.showcase-card:hover,
+.showcase-card.active-card,
+.showcase-card:focus-within {
   transform: translateY(-6px);
   box-shadow: var(--shadow-md);
+  border-color: var(--green-primary);
 }
 
 .showcase-img-box {
@@ -906,15 +1040,62 @@ img {
   transition: transform 0.45s ease;
 }
 
-.showcase-card:hover .showcase-img-box img {
-  transform: scale(1.05);
+.showcase-card:hover .showcase-img-box img,
+.showcase-card.active-card .showcase-img-box img {
+  transform: scale(1.06);
+}
+
+/* Ícone flutuante redondinho do WhatsApp que aparece sobre o produto ao passar o mouse ou clicar */
+.showcase-wa-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: rgba(7, 43, 21, 0.48);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+
+.wa-card-icon {
+  width: 68px;
+  height: 68px;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 24px rgba(37, 211, 102, 0.65);
+  transform: scale(0.65);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wa-card-icon svg {
+  width: 38px;
+  height: 38px;
+}
+
+.showcase-card:hover .showcase-wa-overlay,
+.showcase-card.active-card .showcase-wa-overlay,
+.showcase-card:focus-within .showcase-wa-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.showcase-card:hover .wa-card-icon,
+.showcase-card.active-card .wa-card-icon,
+.showcase-card:focus-within .wa-card-icon {
+  transform: scale(1);
+}
+
+.showcase-wa-overlay:hover .wa-card-icon {
+  transform: scale(1.12);
 }
 
 .showcase-badge {
   position: absolute;
   top: 12px;
   left: 12px;
-  z-index: 2;
+  z-index: 4;
   font-family: 'Montserrat', sans-serif;
   font-size: 0.72rem;
   font-weight: 800;
@@ -957,8 +1138,53 @@ img {
 .showcase-body p {
   font-size: 0.88rem;
   color: var(--text-muted);
-  margin-bottom: 18px;
+  margin-bottom: 0;
   flex-grow: 1;
+}
+
+/* Botão comprido com logo + escrito WhatsApp que aparece embaixo do texto ao passar o mouse ou clicar */
+.showcase-wa-drawer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  transition: max-height 0.32s ease, opacity 0.28s ease, margin-top 0.28s ease;
+}
+
+.showcase-card:hover .showcase-wa-drawer,
+.showcase-card.active-card .showcase-wa-drawer,
+.showcase-card:focus-within .showcase-wa-drawer {
+  max-height: 64px;
+  opacity: 1;
+  margin-top: 16px;
+}
+
+.btn-wa-reveal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 18px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.96rem;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+}
+
+.btn-wa-reveal svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.btn-wa-reveal:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 /* ==========================================================================
@@ -973,10 +1199,8 @@ img {
 
 .about-images {
   position: relative;
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 18px;
-  align-items: center;
+  max-width: 520px;
+  margin: 0 auto;
 }
 
 .about-img-primary img {
