@@ -100,7 +100,7 @@
               <input type="password" id="login-password" class="form-control" placeholder="Sua senha" required />
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width:100%;" id="btn-login-submit">
+            <button type="submit" class="btn btn-primary btn-login-full" id="btn-login-submit">
               Entrar no Painel de Ofertas
             </button>
           </form>
@@ -307,7 +307,7 @@
           <div class="list-toolbar">
             <div>
               <h2 class="admin-card-title">📋 Promoções Cadastradas</h2>
-              <p class="admin-card-subtitle" style="margin-bottom:0;">
+              <p class="admin-card-subtitle admin-subtitle-flush">
                 Gerencie, pause, edite ou exclua promoções a qualquer momento.
               </p>
             </div>
@@ -319,7 +319,7 @@
           <div class="list-filters-row">
             <input type="search" id="admin-search-input" class="form-control search-input-admin"
               placeholder="Buscar promoção pelo nome..." />
-            <select id="admin-filter-cat" class="form-control" style="max-width:210px;">
+            <select id="admin-filter-cat" class="form-control filter-select-cat">
               <option value="all">Todas as categorias</option>
               <option value="eletrica">⚡ Elétrica</option>
               <option value="hidraulica">💧 Hidráulica</option>
@@ -328,7 +328,7 @@
               <option value="iluminacao">💡 Iluminação</option>
               <option value="utilidades">🏠 Utilidades</option>
             </select>
-            <select id="admin-filter-status" class="form-control" style="max-width:170px;">
+            <select id="admin-filter-status" class="form-control filter-select-status">
               <option value="all">Todos os status</option>
               <option value="active">Somente Ativas</option>
               <option value="paused">Somente Pausadas</option>

@@ -47,6 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
         navMenu.classList.remove('open');
       });
     });
+
+    document.addEventListener('click', (e) => {
+      if (navMenu.classList.contains('open') && !e.target.closest('.header')) {
+        navMenu.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navMenu.classList.contains('open')) {
+        navMenu.classList.remove('open');
+      }
+    });
   }
 
   // ========================================================================

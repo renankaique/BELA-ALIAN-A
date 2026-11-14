@@ -23,6 +23,7 @@ body.dark-theme .admin-header .brand-subtitle {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .admin-status-pill {
@@ -39,6 +40,15 @@ body.dark-theme .admin-header .brand-subtitle {
   color: var(--charcoal);
   cursor: default;
   transition: var(--transition);
+  max-width: 260px;
+  min-width: 0;
+}
+
+#firebase-status-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .admin-status-pill .status-dot {
@@ -47,6 +57,7 @@ body.dark-theme .admin-header .brand-subtitle {
   border-radius: 50%;
   background: #F59E0B;
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
+  flex-shrink: 0;
 }
 
 .admin-status-pill.is-online {
@@ -204,6 +215,11 @@ body.dark-theme .auth-error {
   align-items: center;
   gap: 14px;
   box-shadow: var(--shadow-sm);
+  min-width: 0;
+}
+
+.kpi-card > div {
+  min-width: 0;
 }
 
 .kpi-icon {
@@ -258,6 +274,27 @@ body.dark-theme .auth-error {
   grid-template-columns: 1.45fr 0.85fr;
   gap: 24px;
   align-items: start;
+}
+
+.admin-workspace-grid > * {
+  min-width: 0;
+}
+
+.btn-login-full {
+  width: 100%;
+  min-height: 46px;
+}
+
+.admin-subtitle-flush {
+  margin-bottom: 0;
+}
+
+.filter-select-cat {
+  max-width: 210px;
+}
+
+.filter-select-status {
+  max-width: 170px;
 }
 
 /* Formulários */
@@ -389,6 +426,8 @@ body.dark-theme .auth-error {
 }
 
 .upload-dropzone {
+  display: block;
+  width: 100%;
   border: 2px dashed var(--border-color);
   border-radius: 12px;
   padding: 20px;
@@ -564,6 +603,7 @@ body.dark-theme .auth-error {
   display: flex;
   flex-direction: column;
   transition: var(--transition);
+  min-width: 0;
 }
 
 .admin-offer-item.is-paused {
@@ -792,9 +832,9 @@ body.dark-theme .admin-offer-cat-pill {
 
 @media (max-width: 768px) {
   .admin-header .header-inner {
-    height: auto;
+    height: 66px;
     min-height: 66px;
-    padding: 8px 0;
+    padding: 0;
     gap: 8px;
   }
 
@@ -804,22 +844,58 @@ body.dark-theme .admin-offer-cat-pill {
   }
 
   .admin-status-pill {
+    max-width: 150px;
     padding: 5px 9px;
-    font-size: 0.68rem;
+    font-size: 0.7rem;
+    gap: 5px;
   }
 
   .btn-nav-site {
     padding: 7px 11px;
     font-size: 0.78rem;
+    min-height: 36px;
   }
 
   .btn-nav-site span {
     display: none;
   }
 
+  .btn-logout {
+    padding: 6px 10px;
+    font-size: 0.74rem;
+    min-height: 36px;
+    flex-shrink: 0;
+  }
+
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .kpi-card {
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .kpi-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .kpi-value {
+    font-size: 1.32rem;
+  }
+
+  .kpi-label {
+    font-size: 0.75rem;
+    line-height: 1.25;
+  }
+
+  .form-control {
+    font-size: 16px;
+    min-height: 46px;
   }
 
   .form-row-2 {
@@ -830,15 +906,218 @@ body.dark-theme .admin-offer-cat-pill {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .cat-choice-btn {
+    min-height: 44px;
+    font-size: 0.82rem;
+    padding: 10px 8px;
+  }
+
+  .quick-chip {
+    padding: 7px 11px;
+    font-size: 0.78rem;
+    min-height: 34px;
+  }
+
+  .switch-label {
+    min-height: 40px;
+    font-size: 0.88rem;
+  }
+
   .preset-gallery-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .list-filters-row > .form-control {
-    max-width: 100% !important;
+  .list-filters-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .list-filters-row .search-input-admin {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .filter-select-cat,
+  .filter-select-status {
+    max-width: none;
+    width: 100%;
+  }
+
+  .preview-card-stage {
+    max-width: 340px;
+    width: 100%;
+  }
+
+  .preview-card-stage .offer-body {
+    padding: 16px;
+  }
+
+  .preview-card-stage .offer-body h3 {
+    font-size: 1rem;
+  }
+
+  .preview-card-stage .price-current strong {
+    font-size: 1.45rem;
   }
 
   .admin-offers-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-main {
+    padding: 16px 0 48px;
+  }
+
+  .login-wrapper {
+    margin: 16px auto;
+  }
+
+  .login-card {
+    padding: 26px 18px;
+  }
+
+  .admin-card {
+    padding: 18px 14px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .admin-card-title {
+    font-size: 1.08rem;
+  }
+
+  .admin-card-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+  }
+
+  .image-source-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .img-tab-btn {
+    padding: 9px 6px;
+    font-size: 0.74rem;
+    text-align: center;
+    min-height: 42px;
+  }
+
+  .upload-dropzone {
+    padding: 16px 12px;
+    font-size: 0.88rem;
+  }
+
+  .form-actions-bar {
+    flex-direction: column;
+  }
+
+  .form-actions-bar > button {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .list-toolbar #btn-import-defaults {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .admin-offer-thumb {
+    height: 175px;
+  }
+
+  .btn-act {
+    min-height: 42px;
+    font-size: 0.78rem;
+    padding: 8px 6px;
+  }
+
+  .admin-toast {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    max-width: none;
+    text-align: center;
+  }
+
+  .admin-modal-box {
+    padding: 22px 18px;
+  }
+
+  .admin-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .admin-modal-actions button {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-header .brand-icon {
+    width: 28px;
+    height: 30px;
+  }
+
+  .admin-header .brand-title {
+    font-size: 0.92rem;
+  }
+
+  .admin-header .brand-subtitle {
+    font-size: 0.54rem;
+  }
+
+  .admin-header-right {
+    gap: 4px;
+  }
+
+  .admin-status-pill {
+    max-width: 94px;
+    padding: 5px 7px;
+    font-size: 0.66rem;
+  }
+
+  .admin-status-pill .status-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .btn-nav-site {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+
+  .btn-logout {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+
+  .list-filters-row {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-gallery-grid {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-header .brand-subtitle {
+    display: none;
+  }
+
+  .admin-header .brand-title {
+    font-size: 0.86rem;
+  }
+
+  .admin-status-pill {
+    max-width: 76px;
+    padding: 4px 6px;
+    font-size: 0.62rem;
   }
 }
