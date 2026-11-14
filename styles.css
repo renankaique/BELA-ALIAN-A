@@ -1156,6 +1156,26 @@ body.dark-theme .timer-label {
   transform: scale(1.06);
 }
 
+.offer-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #EDF3EF;
+  color: rgba(11, 51, 27, 0.34);
+}
+
+body.dark-theme .offer-img-placeholder {
+  background: #0B2516;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+.offer-camera-icon {
+  width: 54px;
+  height: 54px;
+}
+
 .offer-discount-badge {
   position: absolute;
   top: 10px;

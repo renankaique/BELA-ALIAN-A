@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
       selo: offerSeloInput.value.trim(),
       seloDestaque: Utils.isHotBadge(offerSeloInput.value.trim(), offerDestaqueCheckbox.checked),
       observacao: offerObsInput.value.trim() || "À vista no PIX ou Dinheiro",
-      imagem: offerImgFinalInput.value.trim() || "assets/img/post-tinta-emborrachada.jpg",
+      imagem: offerImgFinalInput.value.trim(),
       ativo: offerAtivoCheckbox.checked,
       destaque: offerDestaqueCheckbox.checked
     };
@@ -444,11 +444,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (offerImgUrlInput) {
     offerImgUrlInput.addEventListener("input", () => {
-      const val = offerImgUrlInput.value.trim();
-      if (val) {
-        offerImgFinalInput.value = val;
-        updateLivePreview();
-      }
+      offerImgFinalInput.value = offerImgUrlInput.value.trim();
+      updateLivePreview();
     });
   }
 
@@ -479,7 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
     offerIdInput.value = "";
     setSelectedCategory("eletrica", false);
     offerSubcatInput.value = Utils.getCategoryMeta("eletrica").defaultSubcat;
-    offerImgFinalInput.value = "assets/img/post-tinta-emborrachada.jpg";
+    offerImgFinalInput.value = "";
     offerImgUrlInput.value = "";
     uploadStatusHint.textContent =
       "Compressão automática leve para carregar rápido no site e no banco Supabase";
@@ -503,7 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
       offer.precoNovo > 0 ? Utils.formatPriceBR(offer.precoNovo) : "";
     offerSeloInput.value = offer.selo || "";
     offerObsInput.value = offer.observacao || "";
-    offerImgFinalInput.value = offer.imagem || "assets/img/post-tinta-emborrachada.jpg";
+    offerImgFinalInput.value = offer.imagem || "";
     offerImgUrlInput.value = String(offer.imagem || "").startsWith("http") ? offer.imagem : "";
     offerAtivoCheckbox.checked = offer.ativo !== false;
     offerDestaqueCheckbox.checked = Boolean(offer.destaque);
@@ -653,7 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="offer-discount-badge ${Utils.isHotBadge(item.selo, item.seloDestaque) ? "badge-hot" : ""}">
                 ${Utils.escapeHTML(Utils.calcBadge(item.precoAntigo, item.precoNovo, item.selo))}
               </span>
-              <img src="${Utils.escapeHTML(Utils.sanitizeImageUrl(item.imagem))}" alt="${Utils.escapeHTML(item.titulo)}" loading="lazy" />
+              ${Utils.buildOfferMediaHTML(item.imagem, item.titulo)}
             </div>
             <div class="admin-offer-info">
               <span class="admin-offer-cat-pill">${catMeta.tabLabel}</span>

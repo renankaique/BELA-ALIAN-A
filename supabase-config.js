@@ -295,7 +295,7 @@ window.BelaUtils = {
 
   sanitizeImageUrl(url) {
     const clean = String(url || "").trim();
-    if (!clean) return "assets/img/post-tinta-emborrachada.jpg";
+    if (!clean) return "";
     if (
       /^data:image\/(jpeg|jpg|png|webp|gif);base64,/i.test(clean) ||
       clean.startsWith("https://") ||
@@ -305,7 +305,29 @@ window.BelaUtils = {
     ) {
       return clean;
     }
-    return "assets/img/post-tinta-emborrachada.jpg";
+    return "";
+  },
+
+  buildOfferMediaHTML(url, altText) {
+    const cleanUrl = this.sanitizeImageUrl(url);
+    const renderPlaceholder = (hidden) => `
+      <div class="offer-img-placeholder"${hidden ? ' style="display:none;"' : ""} aria-label="Local para adicionar imagem do produto">
+        <svg class="offer-camera-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+          <circle cx="12" cy="13" r="3.5" />
+        </svg>
+      </div>
+    `;
+
+    if (!cleanUrl) return renderPlaceholder(false);
+
+    const safeAlt = this.escapeHTML(altText || "Produto em oferta");
+    const safeSrc = this.escapeHTML(cleanUrl);
+    return `
+      <img src="${safeSrc}" alt="${safeAlt}" loading="lazy"
+        onerror="this.style.display='none'; if(this.nextElementSibling){this.nextElementSibling.style.display='flex';}" />
+      ${renderPlaceholder(true)}
+    `;
   },
 
   buildWhatsAppLink(titulo, precoNovo) {
@@ -335,7 +357,7 @@ window.BelaUtils = {
       observacao: r.observacao || "À vista no PIX ou Dinheiro",
       selo: r.selo || "",
       seloDestaque: Boolean(r.seloDestaque ?? r.selo_destaque ?? false),
-      imagem: r.imagem || "assets/img/post-tinta-emborrachada.jpg",
+      imagem: this.sanitizeImageUrl(r.imagem || ""),
       ativo: r.ativo !== false,
       destaque: Boolean(r.destaque),
       ordem: Number(r.ordem || 999),
@@ -373,7 +395,7 @@ window.BelaUtils = {
     const obs = this.escapeHTML(normalized.observacao || "À vista no PIX ou Dinheiro");
     const badgeText = this.calcBadge(precoAntigo, precoNovo, normalized.selo);
     const isHot = this.isHotBadge(badgeText, normalized.seloDestaque);
-    const imgUrl = this.escapeHTML(this.sanitizeImageUrl(normalized.imagem));
+    const mediaHTML = this.buildOfferMediaHTML(normalized.imagem, normalized.titulo || "Produto em Oferta");
     const waHref = this.buildWhatsAppLink(normalized.titulo || "Produto em Oferta", precoNovo);
 
     const oldPriceHTML =
@@ -385,7 +407,7 @@ window.BelaUtils = {
       <article class="offer-card" data-category="${catKey}" ${isInteractive ? 'tabindex="0"' : ""}>
         <div class="offer-img-wrap">
           <span class="offer-discount-badge ${isHot ? "badge-hot" : ""}">${this.escapeHTML(badgeText)}</span>
-          <img src="${imgUrl}" alt="${titulo}" loading="lazy" onerror="this.src='assets/img/post-tinta-emborrachada.jpg'" />
+          ${mediaHTML}
         </div>
         <div class="offer-body">
           <span class="offer-cat">${subcat}</span>
