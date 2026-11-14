@@ -1375,18 +1375,23 @@ body.dark-theme .price-note {
    ========================================================================== */
 .stores-section {
   background: linear-gradient(180deg, var(--bg-light) 0%, #E9F3EC 100%);
+  padding: 52px 0;
+}
+
+.stores-section .section-header {
+  margin-bottom: 28px;
 }
 
 .stores-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  gap: 18px;
 }
 
 .store-card {
   background: var(--bg-white);
   border-radius: var(--radius-md);
-  padding: 30px 26px;
+  padding: 18px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -1395,7 +1400,7 @@ body.dark-theme .price-note {
 }
 
 .store-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
 }
 
@@ -1408,15 +1413,15 @@ body.dark-theme .price-note {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .store-badge {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
-  padding: 5px 12px;
+  padding: 3px 10px;
   border-radius: 50px;
   background: rgba(20, 136, 59, 0.12);
   color: var(--green-primary);
@@ -1433,58 +1438,61 @@ body.dark-theme .price-note {
 }
 
 .store-pin-icon {
-  font-size: 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 .store-card h3 {
-  font-size: 1.3rem;
+  font-size: 1.06rem;
   font-weight: 900;
   color: var(--charcoal);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .store-neighborhood {
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--green-primary);
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .store-address-box {
   background: var(--bg-light);
-  padding: 16px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   flex-grow: 1;
 }
 
 .store-address-box p {
-  font-size: 0.92rem;
-  margin-bottom: 8px;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.store-street {
+  font-weight: 700;
+  color: var(--charcoal);
 }
 
 .store-ref {
-  font-size: 0.85rem !important;
+  font-size: 0.78rem !important;
+  line-height: 1.38;
   color: var(--text-muted);
   margin-bottom: 0 !important;
-}
-
-.store-contact-row {
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-color);
 }
 
 .store-card-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 .store-card-actions .btn {
-  padding: 11px 12px;
-  font-size: 0.84rem;
+  padding: 9px 10px;
+  font-size: 0.8rem;
+  min-height: 38px;
+  white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -1727,7 +1735,8 @@ body.dark-theme .price-note {
     grid-template-columns: repeat(2, 1fr);
   }
   .stores-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
   }
 }
 
@@ -2156,12 +2165,47 @@ body.dark-theme .price-note {
     min-height: 46px;
   }
 
+  .stores-section {
+    padding: 34px 0;
+  }
+
+  .stores-section .section-header {
+    margin-bottom: 18px;
+  }
+
+  .stores-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .store-card {
-    padding: 20px 16px;
+    padding: 14px;
+  }
+
+  .store-card-header {
+    margin-bottom: 6px;
   }
 
   .store-card h3 {
-    font-size: 1.12rem;
+    font-size: 1rem;
+  }
+
+  .store-neighborhood {
+    font-size: 0.78rem;
+    margin-bottom: 8px;
+  }
+
+  .store-address-box {
+    padding: 9px 10px;
+    margin-bottom: 10px;
+  }
+
+  .store-address-box p {
+    font-size: 0.8rem;
+  }
+
+  .store-ref {
+    font-size: 0.75rem !important;
   }
 
   .cta-banner {
@@ -2263,12 +2307,13 @@ body.dark-theme .price-note {
   }
 
   .store-card-actions {
-    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .store-card-actions .btn {
-    width: 100%;
-    min-height: 44px;
+    padding: 8px 10px;
+    min-height: 40px;
+    font-size: 0.8rem;
   }
 }
 
