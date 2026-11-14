@@ -999,157 +999,252 @@ body.dark-theme .footer {
 }
 
 /* ==========================================================================
-   VITRINE DE DESTAQUES
+   OFERTAS DA SEMANA (SUPER OFERTAS BELA ALIANÇA)
    ========================================================================== */
-.featured-products {
-  background: var(--bg-light);
+.nav-link-hot {
+  color: var(--orange-energy) !important;
+  font-weight: 800;
 }
 
-.products-showcase-grid {
+.weekly-offers {
+  background: linear-gradient(180deg, var(--bg-white) 0%, var(--bg-light) 100%);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.offers-top-banner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 2px dashed var(--border-color);
+}
+
+.offers-header-left {
+  max-width: 580px;
+}
+
+.offers-hot-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--orange-energy), #E8412C);
+  color: #FFFFFF;
+  padding: 6px 14px;
+  border-radius: 50px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
+}
+
+.offers-timer-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.timer-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--green-primary);
+}
+
+body.dark-theme .timer-label {
+  color: var(--green-neon);
+}
+
+.offers-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.offer-tab {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-white);
+  color: var(--charcoal);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.offer-tab:hover {
+  border-color: var(--green-primary);
+  color: var(--green-primary);
+}
+
+.offer-tab.active {
+  background: var(--green-primary);
+  border-color: var(--green-primary);
+  color: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(20, 136, 59, 0.3);
+}
+
+.offers-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 22px;
 }
 
-.showcase-card {
+.offers-empty-state {
+  grid-column: 1 / -1;
   background: var(--bg-white);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 36px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.offers-empty-state p {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.offer-card {
+  background: var(--bg-white);
+  border: 2px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   transition: var(--transition);
-  cursor: pointer;
-  outline: none;
-}
-
-.showcase-card:hover,
-.showcase-card.active-card,
-.showcase-card:focus-within {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--green-primary);
-}
-
-.showcase-img-box {
+  box-shadow: var(--shadow-sm);
   position: relative;
-  aspect-ratio: 4 / 4.5;
-  overflow: hidden;
-  background: var(--green-dark);
 }
 
-.showcase-img-box img {
+.offer-card.hidden-offer {
+  display: none;
+}
+
+.offer-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--orange-energy);
+  box-shadow: var(--shadow-md);
+}
+
+.offer-img-wrap {
+  position: relative;
+  aspect-ratio: 4 / 3.4;
+  overflow: hidden;
+  background: #072B15;
+}
+
+.offer-img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.45s ease;
 }
 
-.showcase-card:hover .showcase-img-box img,
-.showcase-card.active-card .showcase-img-box img {
+.offer-card:hover .offer-img-wrap img {
   transform: scale(1.06);
 }
 
-/* Ícone flutuante redondinho do WhatsApp que aparece sobre o produto ao passar o mouse ou clicar */
-.showcase-wa-overlay {
+.offer-discount-badge {
   position: absolute;
-  inset: 0;
-  z-index: 3;
-  background: rgba(7, 43, 21, 0.48);
-  backdrop-filter: blur(2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.28s ease;
-}
-
-.wa-card-icon {
-  width: 68px;
-  height: 68px;
-  border: 3px solid #FFFFFF;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 24px rgba(37, 211, 102, 0.65);
-  transform: scale(0.65);
-  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.wa-card-icon svg {
-  width: 38px;
-  height: 38px;
-}
-
-.showcase-card:hover .showcase-wa-overlay,
-.showcase-card.active-card .showcase-wa-overlay,
-.showcase-card:focus-within .showcase-wa-overlay {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.showcase-card:hover .wa-card-icon,
-.showcase-card.active-card .wa-card-icon,
-.showcase-card:focus-within .wa-card-icon {
-  transform: scale(1);
-}
-
-.showcase-wa-overlay:hover .wa-card-icon {
-  transform: scale(1.12);
-}
-
-.showcase-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 4;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FFB800 0%, #FF5500 100%);
+  color: #1A0D00;
   padding: 5px 11px;
   border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.offer-discount-badge.badge-hot {
+  background: linear-gradient(135deg, #8CE027 0%, #14883B 100%);
   color: #FFFFFF;
 }
 
-.badge-orange {
-  background: var(--orange-energy);
-}
-
-.badge-green {
-  background: var(--green-primary);
-}
-
-.showcase-body {
-  padding: 20px;
+.offer-body {
+  padding: 18px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
-.showcase-category {
-  font-size: 0.76rem;
+.offer-cat {
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--orange-energy);
-  margin-bottom: 6px;
-}
-
-.showcase-body h3 {
-  font-size: 1.1rem;
-  font-weight: 800;
-  margin-bottom: 10px;
-  color: var(--charcoal);
-}
-
-.showcase-body p {
-  font-size: 0.88rem;
   color: var(--text-muted);
-  margin-bottom: 0;
+  margin-bottom: 4px;
+}
+
+.offer-body h3 {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--charcoal);
+  margin-bottom: 12px;
+  line-height: 1.3;
   flex-grow: 1;
 }
 
-/* Botão comprido com logo + escrito WhatsApp que aparece embaixo do texto ao passar o mouse ou clicar */
-.showcase-wa-drawer {
+.offer-price-box {
+  background: var(--bg-light);
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 0;
+}
+
+.price-old {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.price-current {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--orange-energy);
+  line-height: 1.1;
+  margin: 2px 0 4px;
+}
+
+.price-current small {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.price-current strong {
+  font-size: 1.55rem;
+  font-weight: 900;
+}
+
+.price-note {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--green-primary);
+  font-weight: 600;
+}
+
+body.dark-theme .price-note {
+  color: var(--green-neon);
+}
+
+/* Gaveta que esconde o botão WhatsApp da Oferta e revela no hover/clique */
+.offer-wa-drawer {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
@@ -1157,40 +1252,39 @@ body.dark-theme .footer {
   transition: max-height 0.32s ease, opacity 0.28s ease, margin-top 0.28s ease;
 }
 
-.showcase-card:hover .showcase-wa-drawer,
-.showcase-card.active-card .showcase-wa-drawer,
-.showcase-card:focus-within .showcase-wa-drawer {
+.offer-card:hover .offer-wa-drawer,
+.offer-card.active-card .offer-wa-drawer,
+.offer-card:focus-within .offer-wa-drawer {
   max-height: 64px;
   opacity: 1;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
-.btn-wa-reveal {
+.btn-offer-wa {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 11px 18px;
+  padding: 11px 14px;
   border-radius: 50px;
   background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
   color: #FFFFFF;
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
-  font-size: 0.96rem;
-  letter-spacing: 0.3px;
-  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+  font-size: 0.85rem;
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.28);
 }
 
-.btn-wa-reveal svg {
-  width: 22px;
-  height: 22px;
+.btn-offer-wa svg {
+  width: 19px;
+  height: 19px;
   flex-shrink: 0;
 }
 
-.btn-wa-reveal:hover {
+.btn-offer-wa:hover {
   filter: brightness(1.08);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 /* ==========================================================================
@@ -1658,7 +1752,7 @@ body.dark-theme .footer {
    ========================================================================== */
 @media (max-width: 1080px) {
   .departments-grid,
-  .products-showcase-grid {
+  .offers-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   .benefits-grid {
@@ -1981,52 +2075,94 @@ body.dark-theme .footer {
     padding: 5px 0;
   }
 
-  /* Destaques da Loja em Grade 2x2 estilo Vitrine Mobile */
-  .products-showcase-grid {
+  /* Ofertas da Semana em Grade 2x2 no Celular */
+  .offers-top-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+  }
+
+  .offers-timer-box {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .offers-filter-tabs {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+
+  .offer-tab {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+
+  .offers-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
-  .showcase-badge {
-    top: 8px;
-    left: 8px;
-    font-size: 0.6rem;
+  .offer-discount-badge {
+    top: 6px;
+    right: 6px;
+    font-size: 0.62rem;
     padding: 3px 8px;
   }
 
-  .showcase-body {
-    padding: 12px;
+  .offer-body {
+    padding: 10px;
   }
 
-  .showcase-category {
-    font-size: 0.65rem;
-    margin-bottom: 3px;
+  .offer-cat {
+    font-size: 0.62rem;
   }
 
-  .showcase-body h3 {
-    font-size: 0.88rem;
-    line-height: 1.25;
-    margin-bottom: 6px;
+  .offer-body h3 {
+    font-size: 0.82rem;
+    margin-bottom: 8px;
   }
 
-  .showcase-body p {
-    font-size: 0.75rem;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .offer-price-box {
+    padding: 7px 8px;
+    margin-bottom: 0;
   }
 
-  .btn-wa-reveal {
-    padding: 8px 10px;
-    font-size: 0.78rem;
-    gap: 6px;
+  .offer-card:hover .offer-wa-drawer,
+  .offer-card.active-card .offer-wa-drawer,
+  .offer-card:focus-within .offer-wa-drawer {
+    margin-top: 8px;
   }
 
-  .btn-wa-reveal svg {
-    width: 17px;
-    height: 17px;
+  .price-old {
+    font-size: 0.68rem;
+  }
+
+  .price-current small {
+    font-size: 0.7rem;
+  }
+
+  .price-current strong {
+    font-size: 1.15rem;
+  }
+
+  .price-note {
+    font-size: 0.64rem;
+  }
+
+  .btn-offer-wa {
+    padding: 8px 8px;
+    font-size: 0.72rem;
+    gap: 5px;
+  }
+
+  .btn-offer-wa svg {
+    width: 15px;
+    height: 15px;
   }
 
   /* Sobre Nós e Lojas no Celular */

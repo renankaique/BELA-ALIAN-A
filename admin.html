@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Ofertas da Semana | Bela Aliança Elétrica e Hidráulica</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='110 20 790 980'%3E%3Cpolygon points='140,248 517,36 301,461' fill='%23CADB2A'/%3E%3Cpolygon points='517,36 697,155 301,461' fill='%23DCE11E'/%3E%3Cpolygon points='140,248 301,461 466,535 186,976 233,783 138,725' fill='%239ACA3C'/%3E%3Cpolygon points='872,74 606,434 744,471 869,286 814,248' fill='%23FDB913'/%3E%3Cpolygon points='869,286 744,471 620,750 869,750' fill='%23F68B1F'/%3E%3Cpolygon points='744,471 462,750 620,750' fill='%23F26522'/%3E%3Cpolygon points='462,750 345,868 516,979 869,750' fill='%23E8412C'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+
+<body class="admin-page">
+
+  <!-- HEADER FIXO DO PAINEL -->
+  <header class="header admin-header" id="header">
+    <div class="container header-inner">
+      <a href="admin.html" class="brand" aria-label="Painel Bela Aliança">
+        <svg class="brand-icon" width="48" height="50" viewBox="110 20 790 980" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <polygon points="140,248 517,36 301,461" fill="#CADB2A" />
+          <polygon points="517,36 697,155 301,461" fill="#DCE11E" />
+          <polygon points="140,248 301,461 466,535 186,976 233,783 138,725" fill="#9ACA3C" />
+          <polygon points="872,74 606,434 744,471 869,286 814,248" fill="#FDB913" />
+          <polygon points="869,286 744,471 620,750 869,750" fill="#F68B1F" />
+          <polygon points="744,471 462,750 620,750" fill="#F26522" />
+          <polygon points="462,750 345,868 516,979 869,750" fill="#E8412C" />
+        </svg>
+        <div class="brand-text">
+          <span class="brand-title">Bela Aliança</span>
+          <span class="brand-subtitle">Painel do Lojista</span>
+        </div>
+      </a>
+
+      <div class="admin-header-right">
+        <span class="admin-status-pill" id="firebase-status-pill">
+          <span class="status-dot"></span>
+          <span id="firebase-status-text">Modo Local</span>
+        </span>
+
+        <a href="index.html" class="btn-nav-site" title="Voltar e ver o site principal">
+          ↗ <span>Ver Site</span>
+        </a>
+
+        <button class="theme-toggle-btn wa-nav-icon" id="theme-toggle" type="button"
+          aria-label="Alternar tema claro ou escuro" title="Alternar Tema (Claro / Escuro)">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        </button>
+
+        <button type="button" class="btn-logout hidden" id="btn-logout">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="container">
+
+      <!-- TELA DE LOGIN DO LOJISTA (EXIBIDA QUANDO SUPABASE ESTIVER ATIVO E DESLOGADO) -->
+      <section class="login-wrapper hidden" id="admin-login-section">
+        <div class="admin-card login-card">
+          <div class="login-icon-badge">🔐</div>
+          <h2>Acesso do Lojista</h2>
+          <p class="admin-card-subtitle">
+            Entre com o e-mail e senha cadastrados no painel para gerenciar as Ofertas da Semana.
+          </p>
+
+          <form id="login-form" class="login-form">
+            <div class="auth-error hidden" id="login-error-box"></div>
+
+            <div class="form-group">
+              <label for="login-email">E-mail do Proprietário</label>
+              <input type="email" id="login-email" class="form-control" placeholder="dono@belaalianca.com.br"
+                required />
+            </div>
+
+            <div class="form-group">
+              <label for="login-password">Senha</label>
+              <input type="password" id="login-password" class="form-control" placeholder="Sua senha" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%;" id="btn-login-submit">
+              Entrar no Painel de Ofertas
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- PAINEL PRINCIPAL (EXIBIDO APÓS LOGIN OU EM MODO TESTE LOCAL) -->
+      <section id="admin-dashboard" class="hidden">
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon green">🔥</div>
+            <div>
+              <span class="kpi-value" id="kpi-total">0</span>
+              <span class="kpi-label">Promoções Cadastradas</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon orange">👁️</div>
+            <div>
+              <span class="kpi-value" id="kpi-ativas">0</span>
+              <span class="kpi-label">Visíveis no Site</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon yellow">⏸️</div>
+            <div>
+              <span class="kpi-value" id="kpi-pausadas">0</span>
+              <span class="kpi-label">Pausadas / Ocultas</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon blue">🏷️</div>
+            <div>
+              <span class="kpi-value" id="kpi-categorias">0</span>
+              <span class="kpi-label">Categorias em Oferta</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CADASTRO DE PROMOÇÃO + PREVIEW AO VIVO -->
+        <div class="admin-workspace-grid">
+          <div class="admin-card">
+            <h2 class="admin-card-title" id="form-section-title">
+              ➕ Adicionar Promoção da Semana
+            </h2>
+            <p class="admin-card-subtitle">
+              Preencha os dados do produto em oferta. Assim que salvar, o card já aparece na página principal!
+            </p>
+
+            <form id="offer-form">
+              <input type="hidden" id="offer-id" value="" />
+
+              <!-- Categoria Principal -->
+              <div class="form-group">
+                <label>Categoria Principal <span class="req">*</span></label>
+                <div class="category-pills-grid" id="category-selector">
+                  <button type="button" class="cat-choice-btn active" data-cat="eletrica">⚡ Elétrica</button>
+                  <button type="button" class="cat-choice-btn" data-cat="hidraulica">💧 Hidráulica</button>
+                  <button type="button" class="cat-choice-btn" data-cat="pintura">🎨 Pintura &amp; Tintas</button>
+                  <button type="button" class="cat-choice-btn" data-cat="ferramentas">🛠️ Ferramentas</button>
+                  <button type="button" class="cat-choice-btn" data-cat="iluminacao">💡 Iluminação</button>
+                  <button type="button" class="cat-choice-btn" data-cat="utilidades">🏠 Utilidades</button>
+                </div>
+                <input type="hidden" id="offer-categoria" value="eletrica" />
+              </div>
+
+              <!-- Subcategoria + Título -->
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="offer-titulo">Nome do Produto / Promoção <span class="req">*</span></label>
+                  <input type="text" id="offer-titulo" class="form-control"
+                    placeholder="Ex: Cabo Flexível 2,5mm Rolo 100m" maxlength="90" required />
+                </div>
+                <div class="form-group">
+                  <label for="offer-subcat">Etiqueta da Linha (opcional)</label>
+                  <input type="text" id="offer-subcat" class="form-control" placeholder="Ex: Condutores Elétricos"
+                    maxlength="45" />
+                </div>
+              </div>
+
+              <!-- Preço De / Por -->
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="offer-preco-antigo">Preço Normal "De R$" (opcional)</label>
+                  <input type="text" id="offer-preco-antigo" class="form-control" placeholder="Ex: 219,90"
+                    inputmode="decimal" />
+                </div>
+                <div class="form-group">
+                  <label for="offer-preco-novo">Preço Promocional "Por R$" <span class="req">*</span></label>
+                  <input type="text" id="offer-preco-novo" class="form-control" placeholder="Ex: 169,90"
+                    inputmode="decimal" required />
+                </div>
+              </div>
+
+              <!-- Selo e Condição -->
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="offer-selo">Selo da Promoção</label>
+                  <input type="text" id="offer-selo" class="form-control" placeholder="Deixe vazio para calcular % OFF"
+                    maxlength="22" />
+                  <div class="quick-chips">
+                    <button type="button" class="quick-chip" data-fill-selo="">Auto (% OFF)</button>
+                    <button type="button" class="quick-chip" data-fill-selo="SUPER OFERTA">SUPER OFERTA</button>
+                    <button type="button" class="quick-chip" data-fill-selo="QUEIMA DE ESTOQUE">QUEIMA DE
+                      ESTOQUE</button>
+                    <button type="button" class="quick-chip" data-fill-selo="SÓ ESTA SEMANA">SÓ ESTA SEMANA</button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="offer-obs">Condição de Pagamento</label>
+                  <input type="text" id="offer-obs" class="form-control"
+                    placeholder="À vista no PIX, Dinheiro ou Débito" maxlength="55" />
+                  <div class="quick-chips">
+                    <button type="button" class="quick-chip" data-fill-obs="À vista no PIX ou Dinheiro">PIX /
+                      Dinheiro</button>
+                    <button type="button" class="quick-chip" data-fill-obs="À vista no PIX, Dinheiro ou Débito">PIX /
+                      Débito</button>
+                    <button type="button" class="quick-chip" data-fill-obs="À vista ou até 3x sem juros">Até 3x s/
+                      juros</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Foto do Produto -->
+              <div class="form-group">
+                <label>Foto do Produto</label>
+                <div class="image-source-tabs">
+                  <button type="button" class="img-tab-btn active" data-img-mode="upload">📸 Enviar Foto</button>
+                  <button type="button" class="img-tab-btn" data-img-mode="preset">🖼️ Fotos da Loja</button>
+                  <button type="button" class="img-tab-btn" data-img-mode="url">🔗 Colar Link (URL)</button>
+                </div>
+
+                <!-- Upload com compressão automática gratuita -->
+                <div id="img-panel-upload">
+                  <label class="upload-dropzone" for="offer-img-file">
+                    <strong>Clique aqui para escolher uma foto do celular ou computador</strong>
+                    <span class="upload-hint" id="upload-status-hint">
+                      Compressão automática leve para carregar rápido no site e no banco Supabase
+                    </span>
+                    <input type="file" id="offer-img-file" accept="image/*" />
+                  </label>
+                </div>
+
+                <!-- Galeria pronta do site -->
+                <div id="img-panel-preset" class="hidden">
+                  <div class="preset-gallery-grid" id="preset-gallery-grid"></div>
+                </div>
+
+                <!-- Link URL -->
+                <div id="img-panel-url" class="hidden">
+                  <input type="text" id="offer-img-url" class="form-control"
+                    placeholder="https://... ou assets/img/post-tinta-emborrachada.jpg" />
+                </div>
+
+                <input type="hidden" id="offer-imagem-final" value="assets/img/post-tinta-emborrachada.jpg" />
+              </div>
+
+              <!-- Opções -->
+              <div class="toggle-row">
+                <label class="switch-label">
+                  <input type="checkbox" id="offer-ativo" checked />
+                  <span>Promoção Ativa (mostrar no site)</span>
+                </label>
+                <label class="switch-label">
+                  <input type="checkbox" id="offer-destaque" />
+                  <span>Fixar no topo (Destaque)</span>
+                </label>
+              </div>
+
+              <div class="form-actions-bar">
+                <button type="submit" class="btn btn-primary" id="btn-save-offer">
+                  💾 Salvar Promoção no Site
+                </button>
+                <button type="button" class="btn-secondary-admin hidden" id="btn-cancel-edit">
+                  Cancelar Edição
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- PRÉ-VISUALIZAÇÃO AO VIVO -->
+          <div class="admin-card preview-sticky-card">
+            <h3 class="admin-card-title">👀 Pré-visualização ao Vivo</h3>
+            <p class="admin-card-subtitle">
+              Veja exatamente como o cliente vai enxergar o card nas <strong>Ofertas da Semana</strong>.
+            </p>
+
+            <div class="preview-card-stage" id="preview-card-stage"></div>
+
+            <div class="preview-sim-toggle">
+              <label class="switch-label">
+                <input type="checkbox" id="toggle-preview-hover" />
+                <span>Simular mouse em cima (mostrar botão WhatsApp)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- LISTA DE PROMOÇÕES CADASTRADAS -->
+        <div class="admin-card">
+          <div class="list-toolbar">
+            <div>
+              <h2 class="admin-card-title">📋 Promoções Cadastradas</h2>
+              <p class="admin-card-subtitle" style="margin-bottom:0;">
+                Gerencie, pause, edite ou exclua promoções a qualquer momento.
+              </p>
+            </div>
+            <button type="button" class="btn-secondary-admin" id="btn-import-defaults">
+              📥 Importar 8 Ofertas Modelo
+            </button>
+          </div>
+
+          <div class="list-filters-row">
+            <input type="search" id="admin-search-input" class="form-control search-input-admin"
+              placeholder="Buscar promoção pelo nome..." />
+            <select id="admin-filter-cat" class="form-control" style="max-width:210px;">
+              <option value="all">Todas as categorias</option>
+              <option value="eletrica">⚡ Elétrica</option>
+              <option value="hidraulica">💧 Hidráulica</option>
+              <option value="pintura">🎨 Pintura &amp; Tintas</option>
+              <option value="ferramentas">🛠️ Ferramentas</option>
+              <option value="iluminacao">💡 Iluminação</option>
+              <option value="utilidades">🏠 Utilidades</option>
+            </select>
+            <select id="admin-filter-status" class="form-control" style="max-width:170px;">
+              <option value="all">Todos os status</option>
+              <option value="active">Somente Ativas</option>
+              <option value="paused">Somente Pausadas</option>
+            </select>
+          </div>
+
+          <div class="admin-offers-grid" id="admin-offers-list"></div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+  <div class="admin-modal-backdrop" id="delete-modal" role="dialog" aria-modal="true"
+    aria-labelledby="delete-modal-title">
+    <div class="admin-modal-box">
+      <h3 id="delete-modal-title">Excluir promoção?</h3>
+      <p id="delete-modal-desc">Tem certeza que deseja remover esta promoção? Esta ação não pode ser desfeita.</p>
+      <div class="admin-modal-actions">
+        <button type="button" class="btn-secondary-admin" id="btn-cancel-delete">Cancelar</button>
+        <button type="button" class="btn-danger" id="btn-confirm-delete">Sim, Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="admin-toast" id="admin-toast" role="status" aria-live="polite"></div>
+
+  <!-- Supabase SDK v2 + Configuração -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+
+</html>
