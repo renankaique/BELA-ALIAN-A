@@ -9,8 +9,8 @@
 // ============================================================================
 
 window.BELA_SUPABASE_CONFIG = {
-  url: "COLE_SUA_PROJECT_URL_AQUI",
-  anonKey: "COLE_SUA_ANON_OR_PUBLISHABLE_KEY_AQUI"
+  url: "https://ckeozluuespolmhvzyus.supabase.co",
+  anonKey: "sb_publishable_t3Wk4uoJBTF6NDaYXbX36w_CfKmo7x6"
 };
 
 window.BELA_WHATSAPP_NUMBER = "5561999945097";
