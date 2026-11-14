@@ -202,18 +202,18 @@ body.dark-theme .auth-error {
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .kpi-card {
   background: var(--bg-white);
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 18px 20px;
+  padding: 13px 15px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 11px;
   box-shadow: var(--shadow-sm);
   min-width: 0;
 }
@@ -223,13 +223,13 @@ body.dark-theme .auth-error {
 }
 
 .kpi-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   flex-shrink: 0;
 }
 
@@ -495,7 +495,62 @@ body.dark-theme .auth-error {
   border-color: var(--orange-energy);
 }
 
-/* Switch Checkbox */
+/* Switch Checkbox & Opções Extras Recolhíveis */
+.admin-extra-details {
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-light);
+  margin: 4px 0 18px;
+  overflow: hidden;
+}
+
+.admin-extra-details summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-extra-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-extra-details summary::after {
+  content: '+';
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--green-primary);
+  font-weight: 800;
+}
+
+body.dark-theme .admin-extra-details summary::after {
+  color: var(--green-neon);
+}
+
+.admin-extra-details[open] summary {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-extra-details[open] summary::after {
+  content: '−';
+}
+
+.extra-options-body {
+  padding: 14px;
+}
+
+.extra-options-body .toggle-row {
+  margin: 4px 0 0;
+}
+
 .toggle-row {
   display: flex;
   flex-wrap: wrap;

@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const uploadStatusHint = document.getElementById("upload-status-hint");
   const offerAtivoCheckbox = document.getElementById("offer-ativo");
   const offerDestaqueCheckbox = document.getElementById("offer-destaque");
+  const extraOptionsPanel = document.getElementById("extra-options-panel");
   const btnSaveOffer = document.getElementById("btn-save-offer");
   const btnCancelEdit = document.getElementById("btn-cancel-edit");
 
@@ -478,12 +479,12 @@ document.addEventListener("DOMContentLoaded", () => {
     offerSubcatInput.value = Utils.getCategoryMeta("eletrica").defaultSubcat;
     offerImgFinalInput.value = "";
     offerImgUrlInput.value = "";
-    uploadStatusHint.textContent =
-      "Compressão automática leve para carregar rápido no site e no banco Supabase";
+    uploadStatusHint.textContent = "Otimizada automaticamente";
     offerAtivoCheckbox.checked = true;
     offerDestaqueCheckbox.checked = false;
-    formTitleEl.textContent = "➕ Adicionar Promoção da Semana";
-    btnSaveOffer.textContent = "💾 Salvar Promoção no Site";
+    if (extraOptionsPanel) extraOptionsPanel.open = false;
+    formTitleEl.textContent = "➕ Nova Promoção";
+    btnSaveOffer.textContent = "💾 Publicar Promoção";
     btnCancelEdit.classList.add("hidden");
     renderPresetGallery();
     updateLivePreview();
@@ -504,9 +505,12 @@ document.addEventListener("DOMContentLoaded", () => {
     offerImgUrlInput.value = String(offer.imagem || "").startsWith("http") ? offer.imagem : "";
     offerAtivoCheckbox.checked = offer.ativo !== false;
     offerDestaqueCheckbox.checked = Boolean(offer.destaque);
+    if (extraOptionsPanel) {
+      extraOptionsPanel.open = Boolean(offer.selo || offer.destaque || offer.ativo === false);
+    }
 
     formTitleEl.textContent = "✏️ Editar Promoção";
-    btnSaveOffer.textContent = "🔄 Atualizar Promoção no Site";
+    btnSaveOffer.textContent = "🔄 Atualizar Promoção";
     btnCancelEdit.classList.remove("hidden");
     renderPresetGallery();
     updateLivePreview();
@@ -568,8 +572,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } finally {
         btnSaveOffer.disabled = false;
         btnSaveOffer.textContent = offerIdInput.value
-          ? "🔄 Atualizar Promoção no Site"
-          : "💾 Salvar Promoção no Site";
+          ? "🔄 Atualizar Promoção"
+          : "💾 Publicar Promoção";
       }
     });
   }

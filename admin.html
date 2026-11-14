@@ -116,28 +116,28 @@
             <div class="kpi-icon green">🔥</div>
             <div>
               <span class="kpi-value" id="kpi-total">0</span>
-              <span class="kpi-label">Promoções Cadastradas</span>
+              <span class="kpi-label">Cadastradas</span>
             </div>
           </div>
           <div class="kpi-card">
             <div class="kpi-icon orange">👁️</div>
             <div>
               <span class="kpi-value" id="kpi-ativas">0</span>
-              <span class="kpi-label">Visíveis no Site</span>
+              <span class="kpi-label">Ativas no Site</span>
             </div>
           </div>
           <div class="kpi-card">
             <div class="kpi-icon yellow">⏸️</div>
             <div>
               <span class="kpi-value" id="kpi-pausadas">0</span>
-              <span class="kpi-label">Pausadas / Ocultas</span>
+              <span class="kpi-label">Pausadas</span>
             </div>
           </div>
           <div class="kpi-card">
             <div class="kpi-icon blue">🏷️</div>
             <div>
               <span class="kpi-value" id="kpi-categorias">0</span>
-              <span class="kpi-label">Categorias em Oferta</span>
+              <span class="kpi-label">Categorias</span>
             </div>
           </div>
         </div>
@@ -146,22 +146,19 @@
         <div class="admin-workspace-grid">
           <div class="admin-card">
             <h2 class="admin-card-title" id="form-section-title">
-              ➕ Adicionar Promoção da Semana
+              ➕ Nova Promoção
             </h2>
-            <p class="admin-card-subtitle">
-              Preencha os dados do produto em oferta. Assim que salvar, o card já aparece na página principal!
-            </p>
 
             <form id="offer-form">
               <input type="hidden" id="offer-id" value="" />
 
-              <!-- Categoria Principal -->
+              <!-- Categoria -->
               <div class="form-group">
-                <label>Categoria Principal <span class="req">*</span></label>
+                <label>Categoria <span class="req">*</span></label>
                 <div class="category-pills-grid" id="category-selector">
                   <button type="button" class="cat-choice-btn active" data-cat="eletrica">⚡ Elétrica</button>
                   <button type="button" class="cat-choice-btn" data-cat="hidraulica">💧 Hidráulica</button>
-                  <button type="button" class="cat-choice-btn" data-cat="pintura">🎨 Pintura &amp; Tintas</button>
+                  <button type="button" class="cat-choice-btn" data-cat="pintura">🎨 Pintura</button>
                   <button type="button" class="cat-choice-btn" data-cat="ferramentas">🛠️ Ferramentas</button>
                   <button type="button" class="cat-choice-btn" data-cat="iluminacao">💡 Iluminação</button>
                   <button type="button" class="cat-choice-btn" data-cat="utilidades">🏠 Utilidades</button>
@@ -169,61 +166,24 @@
                 <input type="hidden" id="offer-categoria" value="eletrica" />
               </div>
 
-              <!-- Subcategoria + Título -->
-              <div class="form-row-2">
-                <div class="form-group">
-                  <label for="offer-titulo">Nome do Produto / Promoção <span class="req">*</span></label>
-                  <input type="text" id="offer-titulo" class="form-control"
-                    placeholder="Ex: Cabo Flexível 2,5mm Rolo 100m" maxlength="90" required />
-                </div>
-                <div class="form-group">
-                  <label for="offer-subcat">Etiqueta da Linha (opcional)</label>
-                  <input type="text" id="offer-subcat" class="form-control" placeholder="Ex: Condutores Elétricos"
-                    maxlength="45" />
-                </div>
+              <!-- Nome do Produto -->
+              <div class="form-group">
+                <label for="offer-titulo">Nome do Produto <span class="req">*</span></label>
+                <input type="text" id="offer-titulo" class="form-control"
+                  placeholder="Ex: Cabo Flexível 2,5mm Rolo 100m" maxlength="90" required />
               </div>
 
               <!-- Preço De / Por -->
               <div class="form-row-2">
                 <div class="form-group">
-                  <label for="offer-preco-antigo">Preço Normal "De R$" (opcional)</label>
-                  <input type="text" id="offer-preco-antigo" class="form-control" placeholder="Ex: 219,90"
+                  <label for="offer-preco-antigo">Preço Normal (De R$)</label>
+                  <input type="text" id="offer-preco-antigo" class="form-control" placeholder="Opcional (ex: 219,90)"
                     inputmode="decimal" />
                 </div>
                 <div class="form-group">
-                  <label for="offer-preco-novo">Preço Promocional "Por R$" <span class="req">*</span></label>
+                  <label for="offer-preco-novo">Preço na Oferta (Por R$) <span class="req">*</span></label>
                   <input type="text" id="offer-preco-novo" class="form-control" placeholder="Ex: 169,90"
                     inputmode="decimal" required />
-                </div>
-              </div>
-
-              <!-- Selo e Condição -->
-              <div class="form-row-2">
-                <div class="form-group">
-                  <label for="offer-selo">Selo da Promoção</label>
-                  <input type="text" id="offer-selo" class="form-control" placeholder="Deixe vazio para calcular % OFF"
-                    maxlength="22" />
-                  <div class="quick-chips">
-                    <button type="button" class="quick-chip" data-fill-selo="">Auto (% OFF)</button>
-                    <button type="button" class="quick-chip" data-fill-selo="SUPER OFERTA">SUPER OFERTA</button>
-                    <button type="button" class="quick-chip" data-fill-selo="QUEIMA DE ESTOQUE">QUEIMA DE
-                      ESTOQUE</button>
-                    <button type="button" class="quick-chip" data-fill-selo="SÓ ESTA SEMANA">SÓ ESTA SEMANA</button>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="offer-obs">Condição de Pagamento</label>
-                  <input type="text" id="offer-obs" class="form-control"
-                    placeholder="À vista no PIX, Dinheiro ou Débito" maxlength="55" />
-                  <div class="quick-chips">
-                    <button type="button" class="quick-chip" data-fill-obs="À vista no PIX ou Dinheiro">PIX /
-                      Dinheiro</button>
-                    <button type="button" class="quick-chip" data-fill-obs="À vista no PIX, Dinheiro ou Débito">PIX /
-                      Débito</button>
-                    <button type="button" class="quick-chip" data-fill-obs="À vista ou até 3x sem juros">Até 3x s/
-                      juros</button>
-                  </div>
                 </div>
               </div>
 
@@ -232,16 +192,16 @@
                 <label>Foto do Produto</label>
                 <div class="image-source-tabs">
                   <button type="button" class="img-tab-btn active" data-img-mode="upload">📸 Enviar Foto</button>
-                  <button type="button" class="img-tab-btn" data-img-mode="preset">🖼️ Fotos da Loja</button>
-                  <button type="button" class="img-tab-btn" data-img-mode="url">🔗 Colar Link (URL)</button>
+                  <button type="button" class="img-tab-btn" data-img-mode="preset">🖼️ Da Loja</button>
+                  <button type="button" class="img-tab-btn" data-img-mode="url">🔗 Link</button>
                 </div>
 
-                <!-- Upload com compressão automática gratuita -->
+                <!-- Upload com compressão automática -->
                 <div id="img-panel-upload">
                   <label class="upload-dropzone" for="offer-img-file">
-                    <strong>Clique aqui para escolher uma foto do celular ou computador</strong>
+                    <strong>Escolher foto do celular ou PC</strong>
                     <span class="upload-hint" id="upload-status-hint">
-                      Compressão automática leve para carregar rápido no site e no banco Supabase
+                      Otimizada automaticamente
                     </span>
                     <input type="file" id="offer-img-file" accept="image/*" />
                   </label>
@@ -261,21 +221,61 @@
                 <input type="hidden" id="offer-imagem-final" value="" />
               </div>
 
-              <!-- Opções -->
-              <div class="toggle-row">
-                <label class="switch-label">
-                  <input type="checkbox" id="offer-ativo" checked />
-                  <span>Promoção Ativa (mostrar no site)</span>
-                </label>
-                <label class="switch-label">
-                  <input type="checkbox" id="offer-destaque" />
-                  <span>Fixar no topo (Destaque)</span>
-                </label>
-              </div>
+              <!-- Opções Extras (recolhidas por padrão para manter a tela limpa) -->
+              <details class="admin-extra-details" id="extra-options-panel">
+                <summary>⚙️ Mais opções (selo, pagamento, destaque)</summary>
+                <div class="extra-options-body">
+                  <div class="form-group">
+                    <label for="offer-subcat">Etiqueta da Linha (opcional)</label>
+                    <input type="text" id="offer-subcat" class="form-control" placeholder="Ex: Condutores Elétricos"
+                      maxlength="45" />
+                  </div>
+
+                  <div class="form-row-2">
+                    <div class="form-group">
+                      <label for="offer-selo">Selo da Promoção</label>
+                      <input type="text" id="offer-selo" class="form-control" placeholder="Vazio = calcula % OFF"
+                        maxlength="22" />
+                      <div class="quick-chips">
+                        <button type="button" class="quick-chip" data-fill-selo="">Auto (% OFF)</button>
+                        <button type="button" class="quick-chip" data-fill-selo="SUPER OFERTA">SUPER OFERTA</button>
+                        <button type="button" class="quick-chip" data-fill-selo="QUEIMA DE ESTOQUE">QUEIMA DE
+                          ESTOQUE</button>
+                        <button type="button" class="quick-chip" data-fill-selo="SÓ ESTA SEMANA">SÓ ESTA SEMANA</button>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="offer-obs">Condição de Pagamento</label>
+                      <input type="text" id="offer-obs" class="form-control"
+                        placeholder="À vista no PIX ou Dinheiro" maxlength="55" />
+                      <div class="quick-chips">
+                        <button type="button" class="quick-chip" data-fill-obs="À vista no PIX ou Dinheiro">PIX /
+                          Dinheiro</button>
+                        <button type="button" class="quick-chip" data-fill-obs="À vista no PIX, Dinheiro ou Débito">PIX
+                          / Débito</button>
+                        <button type="button" class="quick-chip" data-fill-obs="À vista ou até 3x sem juros">Até 3x s/
+                          juros</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="toggle-row">
+                    <label class="switch-label">
+                      <input type="checkbox" id="offer-ativo" checked />
+                      <span>Promoção Ativa (visível no site)</span>
+                    </label>
+                    <label class="switch-label">
+                      <input type="checkbox" id="offer-destaque" />
+                      <span>Fixar no topo (Destaque)</span>
+                    </label>
+                  </div>
+                </div>
+              </details>
 
               <div class="form-actions-bar">
                 <button type="submit" class="btn btn-primary" id="btn-save-offer">
-                  💾 Salvar Promoção no Site
+                  💾 Publicar Promoção
                 </button>
                 <button type="button" class="btn-secondary-admin hidden" id="btn-cancel-edit">
                   Cancelar Edição
@@ -286,17 +286,14 @@
 
           <!-- PRÉ-VISUALIZAÇÃO AO VIVO -->
           <div class="admin-card preview-sticky-card">
-            <h3 class="admin-card-title">👀 Pré-visualização ao Vivo</h3>
-            <p class="admin-card-subtitle">
-              Veja exatamente como o cliente vai enxergar o card nas <strong>Ofertas da Semana</strong>.
-            </p>
+            <h3 class="admin-card-title">👀 Pré-visualização</h3>
 
             <div class="preview-card-stage" id="preview-card-stage"></div>
 
             <div class="preview-sim-toggle">
               <label class="switch-label">
                 <input type="checkbox" id="toggle-preview-hover" />
-                <span>Simular mouse em cima (mostrar botão WhatsApp)</span>
+                <span>Mostrar botão do WhatsApp</span>
               </label>
             </div>
           </div>
