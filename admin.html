@@ -46,7 +46,13 @@
         </span>
 
         <a href="index.html" class="btn-nav-site" title="Voltar e ver o site principal">
-          ↗ <span>Ver Site</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+          <span>Ver Site</span>
         </a>
 
         <button class="theme-toggle-btn wa-nav-icon" id="theme-toggle" type="button"
@@ -80,10 +86,16 @@
       <!-- TELA DE LOGIN DO LOJISTA (EXIBIDA QUANDO SUPABASE ESTIVER ATIVO E DESLOGADO) -->
       <section class="login-wrapper hidden" id="admin-login-section">
         <div class="admin-card login-card">
-          <div class="login-icon-badge">🔐</div>
+          <div class="login-icon-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
           <h2>Acesso do Lojista</h2>
           <p class="admin-card-subtitle">
-            Entre com o e-mail e senha cadastrados no painel para gerenciar as Ofertas da Semana.
+            Entre com seu e-mail e senha para gerenciar as ofertas da semana.
           </p>
 
           <form id="login-form" class="login-form">
@@ -113,28 +125,54 @@
         <!-- KPIs -->
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-icon green">🔥</div>
+            <div class="kpi-icon green" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+            </div>
             <div>
               <span class="kpi-value" id="kpi-total">0</span>
               <span class="kpi-label">Cadastradas</span>
             </div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-icon orange">👁️</div>
+            <div class="kpi-icon orange" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </div>
             <div>
               <span class="kpi-value" id="kpi-ativas">0</span>
               <span class="kpi-label">Ativas no Site</span>
             </div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-icon yellow">⏸️</div>
+            <div class="kpi-icon yellow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            </div>
             <div>
               <span class="kpi-value" id="kpi-pausadas">0</span>
               <span class="kpi-label">Pausadas</span>
             </div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-icon blue">🏷️</div>
+            <div class="kpi-icon blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </div>
             <div>
               <span class="kpi-value" id="kpi-categorias">0</span>
               <span class="kpi-label">Categorias</span>
@@ -146,7 +184,7 @@
         <div class="admin-workspace-grid">
           <div class="admin-card">
             <h2 class="admin-card-title" id="form-section-title">
-              ➕ Nova Promoção
+              Nova Promoção
             </h2>
 
             <form id="offer-form">
@@ -156,12 +194,12 @@
               <div class="form-group">
                 <label>Categoria <span class="req">*</span></label>
                 <div class="category-pills-grid" id="category-selector">
-                  <button type="button" class="cat-choice-btn active" data-cat="eletrica">⚡ Elétrica</button>
-                  <button type="button" class="cat-choice-btn" data-cat="hidraulica">💧 Hidráulica</button>
-                  <button type="button" class="cat-choice-btn" data-cat="pintura">🎨 Pintura</button>
-                  <button type="button" class="cat-choice-btn" data-cat="ferramentas">🛠️ Ferramentas</button>
-                  <button type="button" class="cat-choice-btn" data-cat="iluminacao">💡 Iluminação</button>
-                  <button type="button" class="cat-choice-btn" data-cat="utilidades">🏠 Utilidades</button>
+                  <button type="button" class="cat-choice-btn active" data-cat="eletrica">Elétrica</button>
+                  <button type="button" class="cat-choice-btn" data-cat="hidraulica">Hidráulica</button>
+                  <button type="button" class="cat-choice-btn" data-cat="pintura">Pintura</button>
+                  <button type="button" class="cat-choice-btn" data-cat="ferramentas">Ferramentas</button>
+                  <button type="button" class="cat-choice-btn" data-cat="iluminacao">Iluminação</button>
+                  <button type="button" class="cat-choice-btn" data-cat="utilidades">Utilidades</button>
                 </div>
                 <input type="hidden" id="offer-categoria" value="eletrica" />
               </div>
@@ -191,9 +229,9 @@
               <div class="form-group">
                 <label>Foto do Produto</label>
                 <div class="image-source-tabs">
-                  <button type="button" class="img-tab-btn active" data-img-mode="upload">📸 Enviar Foto</button>
-                  <button type="button" class="img-tab-btn" data-img-mode="preset">🖼️ Da Loja</button>
-                  <button type="button" class="img-tab-btn" data-img-mode="url">🔗 Link</button>
+                  <button type="button" class="img-tab-btn active" data-img-mode="upload">Enviar Foto</button>
+                  <button type="button" class="img-tab-btn" data-img-mode="preset">Da Loja</button>
+                  <button type="button" class="img-tab-btn" data-img-mode="url">Link</button>
                 </div>
 
                 <!-- Upload com compressão automática -->
@@ -223,7 +261,7 @@
 
               <!-- Opções Extras (recolhidas por padrão para manter a tela limpa) -->
               <details class="admin-extra-details" id="extra-options-panel">
-                <summary>⚙️ Mais opções (selo, pagamento, destaque)</summary>
+                <summary>Mais opções (selo, pagamento, validade, destaque)</summary>
                 <div class="extra-options-body">
                   <div class="form-group">
                     <label for="offer-subcat">Etiqueta da Linha (opcional)</label>
@@ -263,19 +301,26 @@
                   <div class="toggle-row">
                     <label class="switch-label">
                       <input type="checkbox" id="offer-ativo" checked />
-                      <span>Promoção Ativa (visível no site)</span>
+                      <span>Promoção ativa (visível no site)</span>
                     </label>
                     <label class="switch-label">
                       <input type="checkbox" id="offer-destaque" />
-                      <span>Fixar no topo (Destaque)</span>
+                      <span>Fixar no topo</span>
+                    </label>
+                    <label class="switch-label">
+                      <input type="checkbox" id="offer-renovar-prazo" checked />
+                      <span>Reiniciar contagem de 7 dias ao salvar</span>
                     </label>
                   </div>
+                  <p class="admin-validity-hint">
+                    Promoções ativas expiram e são pausadas automaticamente após 7 dias.
+                  </p>
                 </div>
               </details>
 
               <div class="form-actions-bar">
                 <button type="submit" class="btn btn-primary" id="btn-save-offer">
-                  💾 Publicar Promoção
+                  Publicar Promoção
                 </button>
                 <button type="button" class="btn-secondary-admin hidden" id="btn-cancel-edit">
                   Cancelar Edição
@@ -286,7 +331,7 @@
 
           <!-- PRÉ-VISUALIZAÇÃO AO VIVO -->
           <div class="admin-card preview-sticky-card">
-            <h3 class="admin-card-title">👀 Pré-visualização</h3>
+            <h3 class="admin-card-title">Pré-visualização</h3>
 
             <div class="preview-card-stage" id="preview-card-stage"></div>
 
@@ -303,13 +348,13 @@
         <div class="admin-card">
           <div class="list-toolbar">
             <div>
-              <h2 class="admin-card-title">📋 Promoções Cadastradas</h2>
+              <h2 class="admin-card-title">Promoções Cadastradas</h2>
               <p class="admin-card-subtitle admin-subtitle-flush">
-                Gerencie, pause, edite ou exclua promoções a qualquer momento.
+                Validade automática de 7 dias por promoção ativa.
               </p>
             </div>
             <button type="button" class="btn-secondary-admin" id="btn-import-defaults">
-              📥 Importar 8 Ofertas Modelo
+              Importar 8 Ofertas Modelo
             </button>
           </div>
 
@@ -318,17 +363,17 @@
               placeholder="Buscar promoção pelo nome..." />
             <select id="admin-filter-cat" class="form-control filter-select-cat">
               <option value="all">Todas as categorias</option>
-              <option value="eletrica">⚡ Elétrica</option>
-              <option value="hidraulica">💧 Hidráulica</option>
-              <option value="pintura">🎨 Pintura &amp; Tintas</option>
-              <option value="ferramentas">🛠️ Ferramentas</option>
-              <option value="iluminacao">💡 Iluminação</option>
-              <option value="utilidades">🏠 Utilidades</option>
+              <option value="eletrica">Elétrica</option>
+              <option value="hidraulica">Hidráulica</option>
+              <option value="pintura">Pintura &amp; Tintas</option>
+              <option value="ferramentas">Ferramentas</option>
+              <option value="iluminacao">Iluminação</option>
+              <option value="utilidades">Utilidades</option>
             </select>
             <select id="admin-filter-status" class="form-control filter-select-status">
               <option value="all">Todos os status</option>
-              <option value="active">Somente Ativas</option>
-              <option value="paused">Somente Pausadas</option>
+              <option value="active">Ativas no site</option>
+              <option value="paused">Pausadas / Expiradas</option>
             </select>
           </div>
 

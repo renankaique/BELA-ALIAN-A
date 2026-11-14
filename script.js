@@ -248,12 +248,88 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  function renderOffersToGrid(offersList) {
+  let latestRawOffers = [];
+  let weeklyTickerId = null;
+
+  const countdownBox = document.getElementById('weekly-offers-countdown');
+  const countdownValueEl = document.getElementById('weekly-countdown-value');
+
+  function updateMasterCountdown(activeOffers) {
+    if (!countdownBox || !countdownValueEl || !window.BelaUtils) return;
+
+    const nowMs = Date.now();
+    const prefixEl = countdownBox.querySelector('.countdown-prefix');
+    const validTimes = (activeOffers || [])
+      .map((o) => Number(o.expiresAtMs || 0))
+      .filter((ms) => ms > nowMs);
+
+    if (validTimes.length === 0) {
+      countdownBox.classList.remove('is-urgent');
+      countdownBox.classList.add('is-paused');
+      if (prefixEl) prefixEl.textContent = 'Ofertas semanais:';
+      countdownValueEl.textContent = 'Aguardando novas promoções';
+      return;
+    }
+
+    const nearestMs = Math.min(...validTimes);
+    const cd = window.BelaUtils.formatCountdown(nearestMs, nowMs);
+    countdownBox.classList.remove('is-paused');
+    countdownBox.classList.toggle('is-urgent', cd.urgent);
+    if (prefixEl) prefixEl.textContent = 'Encerram em';
+    countdownValueEl.textContent = cd.text;
+  }
+
+  function updateRenderedOfferTimers() {
     if (!offersGrid || !window.BelaUtils) return;
 
-    const normalizedList = (offersList || []).map((row) => window.BelaUtils.normalizeOfferRow(row));
+    const nowMs = Date.now();
+    const stillValid = latestRawOffers.filter((item) =>
+      window.BelaUtils.isOfferEffectivelyActive(window.BelaUtils.normalizeOfferRow(item), nowMs)
+    );
+    const renderedCount = offersGrid.querySelectorAll('.offer-card').length;
+
+    // Quando o prazo de 7 dias zera, pausa imediatamente a promoção na vitrine
+    if (stillValid.length !== renderedCount) {
+      renderOffersToGrid(latestRawOffers, true);
+      return;
+    }
+
+    offersGrid.querySelectorAll('.offer-expiry-row[data-expires-at]').forEach((rowEl) => {
+      const targetMs = Number(rowEl.getAttribute('data-expires-at') || 0);
+      if (!(targetMs > 0)) return;
+      const cd = window.BelaUtils.formatCountdown(targetMs, nowMs);
+      rowEl.classList.toggle('is-urgent', cd.urgent);
+      const textEl = rowEl.querySelector('.offer-expiry-text');
+      if (textEl) {
+        textEl.textContent = cd.expired ? 'Promoção encerrada' : `Termina em ${cd.compact}`;
+      }
+    });
+
+    const normalizedValid = stillValid.map((item) => window.BelaUtils.normalizeOfferRow(item));
+    updateMasterCountdown(normalizedValid);
+  }
+
+  function ensureCountdownTicker(hasActive) {
+    if (weeklyTickerId) {
+      clearInterval(weeklyTickerId);
+      weeklyTickerId = null;
+    }
+    if (hasActive) {
+      weeklyTickerId = setInterval(updateRenderedOfferTimers, 1000);
+    }
+  }
+
+  function renderOffersToGrid(offersList, preserveRaw = false) {
+    if (!offersGrid || !window.BelaUtils) return;
+
+    if (!preserveRaw) {
+      latestRawOffers = Array.isArray(offersList) ? offersList : [];
+    }
+
+    const nowMs = Date.now();
+    const normalizedList = latestRawOffers.map((row) => window.BelaUtils.normalizeOfferRow(row));
     const activeOffers = normalizedList
-      .filter((item) => item && item.ativo !== false)
+      .filter((item) => window.BelaUtils.isOfferEffectivelyActive(item, nowMs))
       .sort((a, b) => {
         const destA = a.destaque ? 1 : 0;
         const destB = b.destaque ? 1 : 0;
@@ -264,12 +340,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0);
       });
 
+    updateMasterCountdown(activeOffers);
+
     if (activeOffers.length === 0) {
+      ensureCountdownTicker(false);
       offersGrid.innerHTML = `
         <div class="offers-empty-state">
-          <p>Novas ofertas da semana estão sendo preparadas pela nossa equipe!</p>
+          <p>Nenhuma promoção ativa no momento. Novas ofertas são publicadas semanalmente.</p>
           <a href="https://wa.me/5561999945097?text=Ol%C3%A1!%20Quero%20saber%20as%20ofertas%20de%20hoje%20da%20Bela%20Alian%C3%A7a!" target="_blank" rel="noopener" class="btn btn-primary">
-            Consultar Ofertas no WhatsApp
+            Consultar no WhatsApp
           </a>
         </div>
       `;
@@ -278,6 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     offersGrid.innerHTML = activeOffers.map((offer) => window.BelaUtils.buildOfferCardHTML(offer, true)).join('');
     applyOfferFilter(activeFilter);
+    ensureCountdownTicker(true);
   }
 
   // Conectar ao Supabase (Vercel / Config) ou carregar Modo Local
@@ -289,14 +369,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const fetchOffers = async () => {
         const { data, error } = await sb.client.from('ofertas').select('*');
         if (error) {
-          console.warn('Erro ao buscar ofertas no Supabase (mantendo padrão):', error);
+          console.warn('Erro ao buscar ofertas no Supabase:', error);
+          renderOffersToGrid([]);
           return;
         }
-        if (Array.isArray(data) && data.length > 0) {
-          renderOffersToGrid(data);
-        } else {
-          renderOffersToGrid(window.BELA_DEFAULT_OFFERS);
-        }
+        renderOffersToGrid(Array.isArray(data) ? data : []);
       };
 
       await fetchOffers();
@@ -317,11 +394,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const parsed = JSON.parse(localRaw);
         if (Array.isArray(parsed)) {
           renderOffersToGrid(parsed);
+          return;
         }
       }
     } catch (_) {
-      // Mantém as 8 ofertas estáticas padrão do HTML
+      // Fallback abaixo
     }
+
+    const seededDefaults = (window.BELA_DEFAULT_OFFERS || []).map((item) => ({
+      ...item,
+      createdAtMs: Date.now()
+    }));
+    renderOffersToGrid(seededDefaults);
   }
 
   syncOffersFromStore();

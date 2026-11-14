@@ -1,5 +1,5 @@
 // ============================================================================
-// BELA ALIANÇA ELÉTRICA E HIDRÁULICA — PAINEL DO LOJISTA (OFERTAS + FIREBASE)
+// BELA ALIANÇA ELÉTRICA E HIDRÁULICA — PAINEL DO LOJISTA (OFERTAS + SUPABASE)
 // ============================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const uploadStatusHint = document.getElementById("upload-status-hint");
   const offerAtivoCheckbox = document.getElementById("offer-ativo");
   const offerDestaqueCheckbox = document.getElementById("offer-destaque");
+  const offerRenovarPrazoCheckbox = document.getElementById("offer-renovar-prazo");
   const extraOptionsPanel = document.getElementById("extra-options-panel");
   const btnSaveOffer = document.getElementById("btn-save-offer");
   const btnCancelEdit = document.getElementById("btn-cancel-edit");
@@ -75,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let allOffers = [];
   let pendingDeleteId = null;
   let toastTimer = null;
+  let adminCountdownTimerId = null;
+  let isReconcilingExpired = false;
 
   // ==========================================================================
   // TEMA CLARO / ESCURO COMPARTILHADO COM O SITE PRINCIPAL
@@ -118,7 +121,15 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (_) {
       // Fallback abaixo
     }
-    const seed = window.BELA_DEFAULT_OFFERS.map((o) => ({ ...o, createdAtMs: Date.now() }));
+    const nowMs = Date.now();
+    const seed = window.BELA_DEFAULT_OFFERS.map((o) =>
+      Utils.normalizeOfferRow({
+        ...o,
+        createdAtMs: nowMs,
+        updatedAtMs: nowMs,
+        expiresAtMs: Utils.computeExpiresAtMs(nowMs)
+      })
+    );
     localStorage.setItem(window.BELA_LOCAL_DEMO_KEY, JSON.stringify(seed));
     return seed;
   }
@@ -127,6 +138,89 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(window.BELA_LOCAL_DEMO_KEY, JSON.stringify(list));
     allOffers = list.map((o) => Utils.normalizeOfferRow(o));
     refreshOffersUI();
+  }
+
+  async function supabaseWriteOffer(actionFn, payloadOrList) {
+    const res = await actionFn(payloadOrList);
+    if (res.error && Utils.isMissingExpiresAtColumnError(res.error)) {
+      const stripped = Array.isArray(payloadOrList)
+        ? payloadOrList.map((row) => Utils.stripExpiresAtColumn(row))
+        : Utils.stripExpiresAtColumn(payloadOrList);
+      const retryRes = await actionFn(stripped);
+      if (retryRes.error) throw retryRes.error;
+      return retryRes;
+    }
+    if (res.error) throw res.error;
+    return res;
+  }
+
+  async function reconcileExpiredOffers() {
+    if (isReconcilingExpired) return;
+    const nowMs = Date.now();
+    const expiredActive = allOffers.filter(
+      (o) => o.ativo !== false && Utils.isOfferExpired(o, nowMs)
+    );
+    if (expiredActive.length === 0) return;
+
+    isReconcilingExpired = true;
+    const expiredIds = new Set(expiredActive.map((o) => String(o.id)));
+    allOffers = allOffers.map((item) =>
+      expiredIds.has(String(item.id)) ? { ...item, ativo: false } : item
+    );
+
+    try {
+      if (sbState.configured && sbState.client) {
+        const idsList = expiredActive
+          .map((o) => o.id)
+          .filter((id) => id !== undefined && id !== null);
+        if (idsList.length > 0) {
+          const { error } = await sbState.client
+            .from("ofertas")
+            .update({ ativo: false })
+            .in("id", idsList)
+            .eq("ativo", true);
+          if (error) console.warn("Auto-pause de expiradas:", error.message);
+        }
+      } else {
+        localStorage.setItem(window.BELA_LOCAL_DEMO_KEY, JSON.stringify(allOffers));
+      }
+    } finally {
+      isReconcilingExpired = false;
+    }
+
+    refreshOffersUI();
+    showToast(
+      expiredActive.length > 1
+        ? `${expiredActive.length} promoções expiraram após 7 dias e foram pausadas.`
+        : "1 promoção expirou após 7 dias e foi pausada."
+    );
+  }
+
+  function startAdminCountdownTicker() {
+    if (adminCountdownTimerId) return;
+    adminCountdownTimerId = window.setInterval(() => {
+      if (!offersListEl || allOffers.length === 0) return;
+      const nowMs = Date.now();
+      let hasExpiredNow = false;
+
+      offersListEl.querySelectorAll(".admin-offer-timer[data-expires-at]").forEach((el) => {
+        const expiresMs = Number(el.getAttribute("data-expires-at") || 0);
+        const countdown = Utils.formatCountdown(expiresMs, nowMs);
+        if (countdown.expired) {
+          hasExpiredNow = true;
+          return;
+        }
+        el.classList.toggle("is-urgent", countdown.urgent);
+        const textEl = el.querySelector(".admin-offer-timer-text");
+        if (textEl) textEl.textContent = `Expira em ${countdown.compact}`;
+      });
+
+      if (hasExpiredNow) {
+        reconcileExpiredOffers().catch((err) => {
+          console.warn("Erro ao pausar ofertas expiradas:", err);
+        });
+      }
+    }, 1000);
   }
 
   async function loadSupabaseOffers() {
@@ -142,6 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     allOffers = (data || []).map((row) => Utils.normalizeOfferRow(row));
     refreshOffersUI();
+    await reconcileExpiredOffers();
   }
 
   async function saveOfferRecord(data, editId) {
@@ -157,11 +252,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (editId) {
-        const { error } = await sbState.client.from("ofertas").update(dbRow).eq("id", editId);
-        if (error) throw error;
+        await supabaseWriteOffer(
+          (row) => sbState.client.from("ofertas").update(row).eq("id", editId),
+          dbRow
+        );
       } else {
-        const { error } = await sbState.client.from("ofertas").insert([dbRow]);
-        if (error) throw error;
+        await supabaseWriteOffer(
+          (row) => sbState.client.from("ofertas").insert([row]),
+          dbRow
+        );
       }
       await loadSupabaseOffers();
       return;
@@ -169,18 +268,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Modo Local
     const list = [...allOffers];
+    const nowMs = Date.now();
     if (editId) {
       const idx = list.findIndex((item) => String(item.id) === String(editId));
       if (idx !== -1) {
-        list[idx] = Utils.normalizeOfferRow({ ...list[idx], ...data, id: editId });
+        list[idx] = Utils.normalizeOfferRow({
+          ...list[idx],
+          ...data,
+          id: editId,
+          createdAtMs: list[idx].createdAtMs || nowMs,
+          updatedAtMs: nowMs
+        });
       }
     } else {
       list.unshift(
         Utils.normalizeOfferRow({
           ...data,
-          id: "local-" + Date.now(),
+          id: "local-" + nowMs,
           ordem: list.length + 1,
-          createdAtMs: Date.now()
+          createdAtMs: nowMs,
+          updatedAtMs: nowMs
         })
       );
     }
@@ -190,28 +297,44 @@ document.addEventListener("DOMContentLoaded", () => {
   async function toggleOfferActive(id) {
     const target = allOffers.find((o) => String(o.id) === String(id));
     if (!target) return;
-    const nextState = target.ativo === false;
+    const nowMs = Date.now();
+    const isCurrentlyActive = Utils.isOfferEffectivelyActive(target, nowMs);
+    const nextState = !isCurrentlyActive;
 
     if (sbState.configured && sbState.client) {
       try {
-        const { error } = await sbState.client
-          .from("ofertas")
-          .update({ ativo: nextState, updated_at: new Date().toISOString() })
-          .eq("id", id);
-        if (error) throw error;
+        const patch = {
+          ativo: nextState,
+          updated_at: new Date(nowMs).toISOString()
+        };
+        if (nextState) {
+          patch.expires_at = new Date(Utils.computeExpiresAtMs(nowMs)).toISOString();
+        }
+        await supabaseWriteOffer(
+          (row) => sbState.client.from("ofertas").update(row).eq("id", id),
+          patch
+        );
         await loadSupabaseOffers();
-        showToast(nextState ? "Promoção ativada no site!" : "Promoção pausada no site.");
+        showToast(nextState ? "Promoção ativada por 7 dias." : "Promoção pausada no site.");
       } catch (err) {
         showToast("Erro ao atualizar status no Supabase: " + err.message, true);
       }
       return;
     }
 
+    const nextExpiresMs = nextState ? Utils.computeExpiresAtMs(nowMs) : target.expiresAtMs;
     const updated = allOffers.map((item) =>
-      String(item.id) === String(id) ? { ...item, ativo: nextState } : item
+      String(item.id) === String(id)
+        ? Utils.normalizeOfferRow({
+            ...item,
+            ativo: nextState,
+            updatedAtMs: nowMs,
+            expiresAtMs: nextExpiresMs
+          })
+        : item
     );
     saveLocalDemoOffers(updated);
-    showToast(nextState ? "Promoção ativada!" : "Promoção pausada.");
+    showToast(nextState ? "Promoção ativada por 7 dias." : "Promoção pausada.");
   }
 
   async function deleteOfferRecord(id) {
@@ -237,37 +360,44 @@ document.addEventListener("DOMContentLoaded", () => {
         ).map((offer) => Utils.toDbOfferRow(offer));
 
         if (rowsToInsert.length > 0) {
-          const { error } = await sbState.client.from("ofertas").insert(rowsToInsert);
-          if (error) throw error;
+          await supabaseWriteOffer(
+            (rows) => sbState.client.from("ofertas").insert(rows),
+            rowsToInsert
+          );
           await loadSupabaseOffers();
-          showToast(`${rowsToInsert.length} ofertas modelo importadas para o Supabase!`);
+          showToast(`${rowsToInsert.length} ofertas modelo importadas.`);
         } else {
-          showToast("As ofertas modelo já estão cadastradas no Supabase.");
+          showToast("As ofertas modelo já estão cadastradas.");
         }
       } catch (err) {
         showToast("Erro ao importar para o Supabase: " + err.message, true);
       } finally {
         btnImportDefaults.disabled = false;
-        btnImportDefaults.textContent = "📥 Importar 8 Ofertas Modelo";
+        btnImportDefaults.textContent = "Importar 8 Ofertas Modelo";
       }
       return;
     }
 
     const existingTitles = new Set(allOffers.map((o) => String(o.titulo || "").toLowerCase()));
+    const nowMs = Date.now();
     const toAdd = window.BELA_DEFAULT_OFFERS.filter(
       (o) => !existingTitles.has(o.titulo.toLowerCase())
-    ).map((o, idx) => ({
-      ...o,
-      id: "local-seed-" + Date.now() + "-" + idx,
-      createdAtMs: Date.now()
-    }));
+    ).map((o, idx) =>
+      Utils.normalizeOfferRow({
+        ...o,
+        id: "local-seed-" + nowMs + "-" + idx,
+        createdAtMs: nowMs,
+        updatedAtMs: nowMs,
+        expiresAtMs: Utils.computeExpiresAtMs(nowMs)
+      })
+    );
 
     if (toAdd.length === 0) {
       showToast("As 8 ofertas modelo já estão na lista.");
       return;
     }
     saveLocalDemoOffers([...allOffers, ...toAdd]);
-    showToast(`${toAdd.length} ofertas modelo adicionadas!`);
+    showToast(`${toAdd.length} ofertas modelo adicionadas.`);
   }
 
   // ==========================================================================
@@ -275,6 +405,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================================================
   function getFormDraftOffer() {
     const catMeta = Utils.getCategoryMeta(offerCatInput.value);
+    const editId = offerIdInput.value.trim();
+    const existingOffer = editId
+      ? allOffers.find((item) => String(item.id) === String(editId))
+      : null;
+    const shouldKeepExistingExpiry =
+      existingOffer &&
+      existingOffer.expiresAtMs > 0 &&
+      offerRenovarPrazoCheckbox &&
+      !offerRenovarPrazoCheckbox.checked;
+
     return {
       titulo: offerTituloInput.value.trim() || "Nome do Produto em Promoção",
       categoria: catMeta.id,
@@ -286,7 +426,10 @@ document.addEventListener("DOMContentLoaded", () => {
       observacao: offerObsInput.value.trim() || "À vista no PIX ou Dinheiro",
       imagem: offerImgFinalInput.value.trim(),
       ativo: offerAtivoCheckbox.checked,
-      destaque: offerDestaqueCheckbox.checked
+      destaque: offerDestaqueCheckbox.checked,
+      expiresAtMs: shouldKeepExistingExpiry
+        ? existingOffer.expiresAtMs
+        : Utils.computeExpiresAtMs()
     };
   }
 
@@ -434,7 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const compressed = await compressImageToDataURL(file);
         offerImgFinalInput.value = compressed;
         const approxKB = Math.round((compressed.length * 0.75) / 1024);
-        uploadStatusHint.textContent = `Foto pronta (${approxKB} KB) — otimizada para carregar rápido no site!`;
+        uploadStatusHint.textContent = `Foto pronta (${approxKB} KB)`;
         updateLivePreview();
       } catch (err) {
         uploadStatusHint.textContent = "Erro ao processar foto. Tente outra imagem.";
@@ -459,7 +602,8 @@ document.addEventListener("DOMContentLoaded", () => {
     offerSeloInput,
     offerObsInput,
     offerAtivoCheckbox,
-    offerDestaqueCheckbox
+    offerDestaqueCheckbox,
+    offerRenovarPrazoCheckbox
   ].forEach((el) => {
     if (el) {
       el.addEventListener("input", updateLivePreview);
@@ -482,15 +626,19 @@ document.addEventListener("DOMContentLoaded", () => {
     uploadStatusHint.textContent = "Otimizada automaticamente";
     offerAtivoCheckbox.checked = true;
     offerDestaqueCheckbox.checked = false;
+    if (offerRenovarPrazoCheckbox) offerRenovarPrazoCheckbox.checked = true;
     if (extraOptionsPanel) extraOptionsPanel.open = false;
-    formTitleEl.textContent = "➕ Nova Promoção";
-    btnSaveOffer.textContent = "💾 Publicar Promoção";
+    formTitleEl.textContent = "Nova Promoção";
+    btnSaveOffer.textContent = "Publicar Promoção";
     btnCancelEdit.classList.add("hidden");
     renderPresetGallery();
     updateLivePreview();
   }
 
   function loadOfferIntoForm(offer) {
+    const isExpired = Utils.isOfferExpired(offer);
+    const isEffectivelyActive = Utils.isOfferEffectivelyActive(offer);
+
     offerIdInput.value = offer.id;
     setSelectedCategory(offer.categoria, false);
     offerTituloInput.value = offer.titulo || "";
@@ -503,14 +651,17 @@ document.addEventListener("DOMContentLoaded", () => {
     offerObsInput.value = offer.observacao || "";
     offerImgFinalInput.value = offer.imagem || "";
     offerImgUrlInput.value = String(offer.imagem || "").startsWith("http") ? offer.imagem : "";
-    offerAtivoCheckbox.checked = offer.ativo !== false;
+    offerAtivoCheckbox.checked = isEffectivelyActive;
     offerDestaqueCheckbox.checked = Boolean(offer.destaque);
+    if (offerRenovarPrazoCheckbox) {
+      offerRenovarPrazoCheckbox.checked = !isEffectivelyActive || isExpired;
+    }
     if (extraOptionsPanel) {
-      extraOptionsPanel.open = Boolean(offer.selo || offer.destaque || offer.ativo === false);
+      extraOptionsPanel.open = Boolean(offer.selo || offer.destaque || !isEffectivelyActive);
     }
 
-    formTitleEl.textContent = "✏️ Editar Promoção";
-    btnSaveOffer.textContent = "🔄 Atualizar Promoção";
+    formTitleEl.textContent = "Editar Promoção";
+    btnSaveOffer.textContent = "Atualizar Promoção";
     btnCancelEdit.classList.remove("hidden");
     renderPresetGallery();
     updateLivePreview();
@@ -530,19 +681,31 @@ document.addEventListener("DOMContentLoaded", () => {
       const precoAntigo = Utils.parsePrice(offerPrecoAntigoInput.value);
 
       if (!titulo) {
-        showToast("Informe o nome do produto ou promoção.", true);
+        showToast("Informe o nome do produto.", true);
         offerTituloInput.focus();
         return;
       }
 
       if (!(precoNovo > 0)) {
-        showToast("Informe um preço promocional válido maior que zero.", true);
+        showToast("Informe um preço promocional maior que zero.", true);
         offerPrecoNovoInput.focus();
         return;
       }
 
       const catMeta = Utils.getCategoryMeta(offerCatInput.value);
       const seloTexto = offerSeloInput.value.trim();
+      const editId = offerIdInput.value.trim();
+      const existingOffer = editId
+        ? allOffers.find((item) => String(item.id) === String(editId))
+        : null;
+      const nowMs = Date.now();
+      const shouldRenewDeadline =
+        !editId ||
+        (offerRenovarPrazoCheckbox && offerRenovarPrazoCheckbox.checked) ||
+        !(existingOffer && existingOffer.expiresAtMs > 0);
+      const expiresAtMs = shouldRenewDeadline
+        ? Utils.computeExpiresAtMs(nowMs)
+        : existingOffer.expiresAtMs;
 
       const payload = {
         titulo,
@@ -555,16 +718,16 @@ document.addEventListener("DOMContentLoaded", () => {
         observacao: offerObsInput.value.trim() || "À vista no PIX ou Dinheiro",
         imagem: Utils.sanitizeImageUrl(offerImgFinalInput.value),
         ativo: offerAtivoCheckbox.checked,
-        destaque: offerDestaqueCheckbox.checked
+        destaque: offerDestaqueCheckbox.checked,
+        updatedAtMs: nowMs,
+        expiresAtMs
       };
-
-      const editId = offerIdInput.value.trim();
 
       try {
         btnSaveOffer.disabled = true;
         btnSaveOffer.textContent = "Salvando...";
         await saveOfferRecord(payload, editId || null);
-        showToast(editId ? "Promoção atualizada no site!" : "Nova promoção publicada no site!");
+        showToast(editId ? "Promoção atualizada!" : "Promoção publicada!");
         resetOfferForm();
       } catch (err) {
         console.error(err);
@@ -572,8 +735,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } finally {
         btnSaveOffer.disabled = false;
         btnSaveOffer.textContent = offerIdInput.value
-          ? "🔄 Atualizar Promoção"
-          : "💾 Publicar Promoção";
+          ? "Atualizar Promoção"
+          : "Publicar Promoção";
       }
     });
   }
@@ -582,6 +745,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // LISTA DE PROMOÇÕES, FILTROS & MODAL DE EXCLUSÃO
   // ==========================================================================
   function refreshOffersUI() {
+    const nowMs = Date.now();
     const sorted = [...allOffers].sort((a, b) => {
       const destA = a.destaque ? 1 : 0;
       const destB = b.destaque ? 1 : 0;
@@ -593,10 +757,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Atualizar KPIs
-    const activeCount = sorted.filter((o) => o.ativo !== false).length;
+    const activeCount = sorted.filter((o) => Utils.isOfferEffectivelyActive(o, nowMs)).length;
     const pausedCount = sorted.length - activeCount;
     const catSet = new Set(
-      sorted.filter((o) => o.ativo !== false).map((o) => Utils.normalizeCategory(o.categoria))
+      sorted
+        .filter((o) => Utils.isOfferEffectivelyActive(o, nowMs))
+        .map((o) => Utils.normalizeCategory(o.categoria))
     );
 
     kpiTotal.textContent = String(sorted.length);
@@ -612,7 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtered = sorted.filter((item) => {
       const cat = Utils.normalizeCategory(item.categoria);
       const matchesCat = catFilter === "all" || cat === catFilter;
-      const isAtiva = item.ativo !== false;
+      const isAtiva = Utils.isOfferEffectivelyActive(item, nowMs);
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "active" && isAtiva) ||
@@ -629,7 +795,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="offers-empty-state" style="grid-column: 1 / -1;">
           <p>${
             sorted.length === 0
-              ? "Nenhuma promoção cadastrada ainda. Adicione acima ou clique em Importar 8 Ofertas Modelo!"
+              ? "Nenhuma promoção cadastrada."
               : "Nenhuma promoção encontrada para este filtro."
           }</p>
         </div>
@@ -640,7 +806,18 @@ document.addEventListener("DOMContentLoaded", () => {
     offersListEl.innerHTML = filtered
       .map((item) => {
         const catMeta = Utils.getCategoryMeta(item.categoria);
-        const isAtiva = item.ativo !== false;
+        const isExpired = Utils.isOfferExpired(item, nowMs);
+        const isAtiva = Utils.isOfferEffectivelyActive(item, nowMs);
+        const statusBadgeClass = isAtiva ? "active" : isExpired ? "expired" : "paused";
+        const statusLabel = isAtiva ? "Ativa" : isExpired ? "Expirada (7d)" : "Pausada";
+        const countdown = Utils.formatCountdown(item.expiresAtMs, nowMs);
+        const timerClass = isAtiva ? (countdown.urgent ? " is-urgent" : "") : " is-paused";
+        const timerText = isAtiva
+          ? `Expira em ${countdown.compact}`
+          : isExpired
+            ? "Prazo de 7 dias encerrado"
+            : "Pausada no site";
+
         const oldHtml =
           Utils.parsePrice(item.precoAntigo) > Utils.parsePrice(item.precoNovo)
             ? `<span class="old">R$ ${Utils.formatPriceBR(item.precoAntigo)}</span>`
@@ -648,8 +825,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return `
           <article class="admin-offer-item ${isAtiva ? "" : "is-paused"}" data-offer-id="${Utils.escapeHTML(item.id)}">
             <div class="admin-offer-thumb">
-              <span class="admin-status-badge ${isAtiva ? "active" : "paused"}">
-                ${isAtiva ? "Ativa no site" : "Pausada"}
+              <span class="admin-status-badge ${statusBadgeClass}">
+                ${statusLabel}
               </span>
               <span class="offer-discount-badge ${Utils.isHotBadge(item.selo, item.seloDestaque) ? "badge-hot" : ""}">
                 ${Utils.escapeHTML(Utils.calcBadge(item.precoAntigo, item.precoNovo, item.selo))}
@@ -657,21 +834,28 @@ document.addEventListener("DOMContentLoaded", () => {
               ${Utils.buildOfferMediaHTML(item.imagem, item.titulo)}
             </div>
             <div class="admin-offer-info">
-              <span class="admin-offer-cat-pill">${catMeta.tabLabel}</span>
+              <span class="admin-offer-cat-pill">${Utils.escapeHTML(catMeta.tabLabel)}</span>
               <h4>${Utils.escapeHTML(item.titulo)}</h4>
               <div class="admin-offer-prices">
                 ${oldHtml}
                 <span class="now">R$ ${Utils.formatPriceBR(item.precoNovo)}</span>
               </div>
+              <div class="admin-offer-timer${timerClass}"${isAtiva ? ` data-expires-at="${item.expiresAtMs}"` : ""}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <polyline points="12 7 12 12 15.5 14" />
+                </svg>
+                <span class="admin-offer-timer-text">${timerText}</span>
+              </div>
               <div class="admin-offer-actions">
                 <button type="button" class="btn-act" data-action="toggle">
-                  ${isAtiva ? "⏸️ Pausar" : "👁️ Ativar"}
+                  ${isAtiva ? "Pausar" : "Ativar (+7d)"}
                 </button>
                 <button type="button" class="btn-act" data-action="edit">
-                  ✏️ Editar
+                  Editar
                 </button>
                 <button type="button" class="btn-act btn-act-del" data-action="delete">
-                  🗑️ Excluir
+                  Excluir
                 </button>
               </div>
             </div>
@@ -689,7 +873,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const id = itemEl.getAttribute("data-offer-id");
       const action = btn.getAttribute("data-action");
-      const offer = allOffers.find((o) => o.id === id);
+      const offer = allOffers.find((o) => String(o.id) === String(id));
       if (!offer) return;
 
       if (action === "toggle") {
@@ -833,6 +1017,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function bootAdminPanel() {
     renderPresetGallery();
     resetOfferForm();
+    startAdminCountdownTicker();
 
     sbState = await Utils.initSupabase();
 
@@ -863,6 +1048,7 @@ document.addEventListener("DOMContentLoaded", () => {
       loginSection.classList.add("hidden");
       allOffers = getLocalDemoOffers();
       refreshOffersUI();
+      await reconcileExpiredOffers();
     }
   }
 

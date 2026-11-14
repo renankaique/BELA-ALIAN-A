@@ -554,6 +554,15 @@ body.dark-theme .footer {
   margin-bottom: 22px;
 }
 
+.hero-tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-neon);
+  box-shadow: 0 0 0 3px rgba(140, 224, 39, 0.24);
+  flex-shrink: 0;
+}
+
 .hero-title {
   font-size: clamp(2.1rem, 4vw, 3.35rem);
   font-weight: 900;
@@ -930,8 +939,16 @@ body.dark-theme .footer {
 }
 
 .dept-list li::before {
-  content: '⚡';
-  font-size: 0.75rem;
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-primary);
+  flex-shrink: 0;
+}
+
+body.dark-theme .dept-list li::before {
+  background: var(--green-neon);
 }
 
 .dept-cta {
@@ -1002,14 +1019,41 @@ body.dark-theme .footer {
   gap: 12px;
 }
 
-.timer-label {
-  font-size: 0.84rem;
-  font-weight: 700;
+.offers-countdown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 50px;
+  background: rgba(20, 136, 59, 0.1);
+  border: 1px solid rgba(20, 136, 59, 0.24);
   color: var(--green-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
-body.dark-theme .timer-label {
+body.dark-theme .offers-countdown-pill {
+  background: rgba(140, 224, 39, 0.12);
+  border-color: rgba(140, 224, 39, 0.28);
   color: var(--green-neon);
+}
+
+.offers-countdown-pill.is-urgent {
+  background: rgba(255, 107, 0, 0.12);
+  border-color: rgba(255, 107, 0, 0.35);
+  color: var(--orange-energy);
+}
+
+.offers-countdown-pill.is-paused {
+  background: var(--bg-light);
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+
+.countdown-value {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .offers-filter-tabs {
@@ -1214,6 +1258,33 @@ body.dark-theme .price-note {
   color: var(--green-neon);
 }
 
+.offer-expiry-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.offer-expiry-row svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--green-primary);
+}
+
+body.dark-theme .offer-expiry-row svg {
+  color: var(--green-neon);
+}
+
+.offer-expiry-row.is-urgent,
+.offer-expiry-row.is-urgent svg {
+  color: var(--orange-energy);
+}
+
 /* Gaveta que esconde o botão WhatsApp da Oferta e revela no hover/clique */
 .offer-wa-drawer {
   max-height: 0;
@@ -1297,7 +1368,20 @@ body.dark-theme .price-note {
 }
 
 .exp-icon {
-  font-size: 1.6rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(24, 152, 68, 0.14);
+  color: var(--neon);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.exp-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .about-experience-tag strong {
@@ -1438,8 +1522,20 @@ body.dark-theme .price-note {
 }
 
 .store-pin-icon {
-  font-size: 1.05rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+.store-pin-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+[data-theme="dark"] .store-pin-icon {
+  color: var(--neon);
 }
 
 .store-card h3 {
@@ -2128,6 +2224,16 @@ body.dark-theme .price-note {
 
   .price-note {
     font-size: 0.68rem;
+  }
+
+  .offers-countdown-pill {
+    font-size: 0.78rem;
+    padding: 6px 12px;
+  }
+
+  .offer-expiry-row {
+    font-size: 0.7rem;
+    margin-top: 8px;
   }
 
   .btn-offer-wa {

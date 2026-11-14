@@ -173,6 +173,11 @@ body.dark-theme .admin-status-pill.is-online {
   margin-bottom: 14px;
 }
 
+.login-icon-badge svg {
+  width: 28px;
+  height: 28px;
+}
+
 body.dark-theme .login-icon-badge {
   color: var(--green-neon);
   background: rgba(140, 224, 39, 0.14);
@@ -231,6 +236,11 @@ body.dark-theme .auth-error {
   justify-content: center;
   font-size: 1.2rem;
   flex-shrink: 0;
+}
+
+.kpi-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .kpi-icon.green {
@@ -551,6 +561,13 @@ body.dark-theme .admin-extra-details summary::after {
   margin: 4px 0 0;
 }
 
+.admin-validity-hint {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 .toggle-row {
   display: flex;
   flex-wrap: wrap;
@@ -699,6 +716,11 @@ body.dark-theme .admin-extra-details summary::after {
   color: #FFFFFF;
 }
 
+.admin-status-badge.expired {
+  background: #B45309;
+  color: #FFFFFF;
+}
+
 .admin-offer-info {
   padding: 14px;
   flex: 1;
@@ -747,6 +769,53 @@ body.dark-theme .admin-offer-cat-pill {
   font-size: 1.15rem;
   font-weight: 900;
   color: var(--orange-energy);
+}
+
+.admin-offer-timer {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(20, 136, 59, 0.1);
+  color: var(--green-primary);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 10px;
+}
+
+.admin-offer-timer svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.admin-offer-timer.is-urgent {
+  background: rgba(232, 65, 44, 0.12);
+  color: #C53030;
+}
+
+.admin-offer-timer.is-paused {
+  background: rgba(100, 116, 139, 0.14);
+  color: var(--text-muted);
+}
+
+body.dark-theme .admin-offer-timer {
+  background: rgba(140, 224, 39, 0.14);
+  color: var(--green-neon);
+}
+
+body.dark-theme .admin-offer-timer.is-urgent {
+  background: rgba(248, 113, 113, 0.16);
+  color: #FCA5A5;
+}
+
+body.dark-theme .admin-offer-timer.is-paused {
+  background: rgba(148, 163, 184, 0.16);
+  color: #CBD5E1;
 }
 
 .admin-offer-actions {

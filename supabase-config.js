@@ -15,49 +15,50 @@ window.BELA_SUPABASE_CONFIG = {
 
 window.BELA_WHATSAPP_NUMBER = "5561999945097";
 window.BELA_LOCAL_DEMO_KEY = "bela_alianca_ofertas_demo_v1";
+window.BELA_OFFER_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
 
 // Categorias oficiais das Ofertas da Semana
 window.BELA_CATEGORIES = {
   eletrica: {
     id: "eletrica",
     label: "Elétrica",
-    tabLabel: "⚡ Elétrica",
-    emoji: "⚡",
+    tabLabel: "Elétrica",
+    emoji: "",
     defaultSubcat: "Materiais Elétricos"
   },
   hidraulica: {
     id: "hidraulica",
     label: "Hidráulica",
-    tabLabel: "💧 Hidráulica",
-    emoji: "💧",
+    tabLabel: "Hidráulica",
+    emoji: "",
     defaultSubcat: "Linha Hidráulica"
   },
   pintura: {
     id: "pintura",
     label: "Pintura & Tintas",
-    tabLabel: "🎨 Pintura & Tintas",
-    emoji: "🎨",
+    tabLabel: "Pintura & Tintas",
+    emoji: "",
     defaultSubcat: "Tintas & Impermeabilizantes"
   },
   ferramentas: {
     id: "ferramentas",
     label: "Ferramentas",
-    tabLabel: "🛠️ Ferramentas",
-    emoji: "🛠️",
+    tabLabel: "Ferramentas",
+    emoji: "",
     defaultSubcat: "Ferramentas & EPIs"
   },
   iluminacao: {
     id: "iluminacao",
     label: "Iluminação LED",
-    tabLabel: "💡 Iluminação",
-    emoji: "💡",
+    tabLabel: "Iluminação",
+    emoji: "",
     defaultSubcat: "Iluminação LED"
   },
   utilidades: {
     id: "utilidades",
     label: "Utilidades & Casa",
-    tabLabel: "🏠 Utilidades",
-    emoji: "🏠",
+    tabLabel: "Utilidades",
+    emoji: "",
     defaultSubcat: "Utilidades & Casa"
   }
 };
@@ -336,16 +337,75 @@ window.BelaUtils = {
     return `https://wa.me/${window.BELA_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   },
 
+  parseTimestampMs(val) {
+    if (typeof val === "number") return Number.isFinite(val) && val > 0 ? val : 0;
+    if (!val) return 0;
+    const parsed = Date.parse(String(val));
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  },
+
+  computeExpiresAtMs(baseMs = 0) {
+    const base = baseMs > 0 ? baseMs : Date.now();
+    return base + window.BELA_OFFER_DURATION_MS;
+  },
+
+  isOfferExpired(offer, nowMs = Date.now()) {
+    return Boolean(offer && offer.expiresAtMs > 0 && offer.expiresAtMs <= nowMs);
+  },
+
+  isOfferEffectivelyActive(offer, nowMs = Date.now()) {
+    return Boolean(offer && offer.ativo !== false && !this.isOfferExpired(offer, nowMs));
+  },
+
+  formatCountdown(targetMs, nowMs = Date.now()) {
+    const target = Number(targetMs || 0);
+    if (!(target > 0)) {
+      return { expired: false, urgent: false, text: "7 dias", compact: "7d 00h 00m" };
+    }
+
+    const diff = target - nowMs;
+    if (diff <= 0) {
+      return { expired: true, urgent: false, text: "Expirada", compact: "Expirada" };
+    }
+
+    const totalSec = Math.floor(diff / 1000);
+    const days = Math.floor(totalSec / 86400);
+    const hours = Math.floor((totalSec % 86400) / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+    const hh = String(hours).padStart(2, "0");
+    const mm = String(minutes).padStart(2, "0");
+    const ss = String(seconds).padStart(2, "0");
+
+    return {
+      expired: false,
+      urgent: diff < 24 * 60 * 60 * 1000,
+      text: `${days > 0 ? `${days}d ` : ""}${hh}:${mm}:${ss}`,
+      compact: days > 0 ? `${days}d ${hh}h ${mm}m` : `${hh}h ${mm}m ${ss}s`
+    };
+  },
+
+  isMissingExpiresAtColumnError(error) {
+    if (!error) return false;
+    const code = String(error.code || "");
+    const msg = String(error.message || "").toLowerCase();
+    return code === "PGRST204" || code === "42703" || msg.includes("expires_at");
+  },
+
+  stripExpiresAtColumn(row) {
+    const copy = { ...(row || {}) };
+    delete copy.expires_at;
+    return copy;
+  },
+
   // Converte linha vinda do Supabase (snake_case) ou objeto local (camelCase) para formato padrão
   normalizeOfferRow(row) {
     const r = row || {};
-    const createdRaw = r.created_at || r.createdAt;
-    const createdAtMs =
-      typeof r.createdAtMs === "number"
-        ? r.createdAtMs
-        : createdRaw
-        ? Date.parse(createdRaw) || 0
-        : 0;
+    const createdAtMs = this.parseTimestampMs(r.created_at ?? r.createdAt ?? r.createdAtMs);
+    const updatedAtMs = this.parseTimestampMs(r.updated_at ?? r.updatedAt ?? r.updatedAtMs);
+    const rawExpiresMs = this.parseTimestampMs(r.expires_at ?? r.expiresAt ?? r.expiresAtMs);
+    const anchorMs = updatedAtMs || createdAtMs;
+    const expiresAtMs = rawExpiresMs > 0 ? rawExpiresMs : anchorMs > 0 ? anchorMs + window.BELA_OFFER_DURATION_MS : 0;
 
     return {
       id: r.id,
@@ -361,12 +421,19 @@ window.BelaUtils = {
       ativo: r.ativo !== false,
       destaque: Boolean(r.destaque),
       ordem: Number(r.ordem || 999),
-      createdAtMs
+      createdAtMs,
+      updatedAtMs,
+      expiresAtMs,
+      hasExplicitExpiry: rawExpiresMs > 0
     };
   },
 
   // Converte objeto padrão JS para linha da tabela public.ofertas no Supabase
   toDbOfferRow(offer) {
+    const expiresMs =
+      this.parseTimestampMs(offer.expiresAtIso || offer.expires_at || offer.expiresAtMs) ||
+      this.computeExpiresAtMs();
+
     return {
       titulo: offer.titulo,
       categoria: this.normalizeCategory(offer.categoria),
@@ -380,6 +447,7 @@ window.BelaUtils = {
       ativo: offer.ativo !== false,
       destaque: Boolean(offer.destaque),
       ordem: Number(offer.ordem || 999),
+      expires_at: new Date(expiresMs).toISOString(),
       updated_at: new Date().toISOString()
     };
   },
@@ -397,6 +465,8 @@ window.BelaUtils = {
     const isHot = this.isHotBadge(badgeText, normalized.seloDestaque);
     const mediaHTML = this.buildOfferMediaHTML(normalized.imagem, normalized.titulo || "Produto em Oferta");
     const waHref = this.buildWhatsAppLink(normalized.titulo || "Produto em Oferta", precoNovo);
+    const effectiveExpiresMs = normalized.expiresAtMs > 0 ? normalized.expiresAtMs : this.computeExpiresAtMs();
+    const countdown = this.formatCountdown(effectiveExpiresMs);
 
     const oldPriceHTML =
       precoAntigo > 0 && precoAntigo > precoNovo
@@ -419,12 +489,19 @@ window.BelaUtils = {
             </div>
             <span class="price-note">${obs}</span>
           </div>
+          <div class="offer-expiry-row${countdown.urgent ? " is-urgent" : ""}" data-expires-at="${effectiveExpiresMs}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <polyline points="12 7 12 12 15.5 14" />
+            </svg>
+            <span class="offer-expiry-text">Termina em ${countdown.compact}</span>
+          </div>
           <div class="offer-wa-drawer">
             <a href="${waHref}" target="_blank" rel="noopener" class="btn-offer-wa">
               <svg viewBox="0 0 32 32" fill="currentColor">
                 <path d="M16.004 3.2c-7.07 0-12.8 5.73-12.8 12.8 0 2.257.59 4.46 1.71 6.404L3.2 28.8l6.56-1.72c1.88 1.025 3.998 1.566 6.244 1.566 7.07 0 12.8-5.73 12.8-12.8 0-3.42-1.332-6.635-3.75-9.054C22.636 4.532 19.42 3.2 16.004 3.2zm0 23.29c-1.99 0-3.94-.535-5.646-1.547l-.405-.24-4.205 1.103 1.122-4.1-.264-.42c-1.098-1.747-1.678-3.766-1.678-5.846 0-6.055 4.925-10.98 10.98-10.98 2.933 0 5.69 1.143 7.763 3.217 2.073 2.074 3.215 4.83 3.215 7.763 0 6.055-4.925 10.98-10.882 11.05zm6.022-8.21c-.33-.165-1.953-.964-2.255-1.074-.303-.11-.523-.165-.743.165-.22.33-.853 1.074-1.046 1.294-.192.22-.385.248-.715.083-.33-.165-1.394-.514-2.655-1.638-.98-.875-1.643-1.956-1.836-2.286-.193-.33-.02-.508.145-.673.149-.148.33-.385.495-.578.165-.193.22-.33.33-.55.11-.22.055-.413-.028-.578-.082-.165-.743-1.79-1.018-2.45-.268-.642-.54-.555-.743-.565-.192-.01-.413-.012-.633-.012-.22 0-.578.082-.88.413-.303.33-1.156 1.13-1.156 2.753 0 1.624 1.183 3.193 1.348 3.413.165.22 2.328 3.555 5.64 4.985.788.34 1.403.543 1.883.695.79.25 1.51.215 2.078.13.634-.095 1.953-.798 2.228-1.568.275-.77.275-1.43.193-1.568-.083-.138-.303-.22-.633-.385z" />
               </svg>
-              <span>Eu Quero no WhatsApp</span>
+              <span>Pedir no WhatsApp</span>
             </a>
           </div>
         </div>
